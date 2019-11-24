@@ -1,98 +1,109 @@
 # About This Book
 
-## License
+## လိုင်စင်
 
-The Little Redis Book is licensed under the Attribution-NonCommercial 3.0 Unported license. You should not have paid for this book.
 
-You are free to copy, distribute, modify or display the book. However, I ask that you always attribute the book to me, Karl Seguin, and do not use it for commercial purposes.
+The Little MongoDB စာအုပ်သည်  Attribution-NonCommercial 3.0 Unported လိုင်စင် အောက်တွင် တည်ရှိသဖြင့်  **ထိုစာအုပ်အတွက် အခကြေးငွေ ပေးဆောင်ခြင်းမပြုရပါ။**
 
-You can see the *full text* of **the license at**:
+ထိုစာအုပ်ကို အခမဲ့ ကူးယူ၊ မျှဝေ၊ ပြင်ဆင်၊ ပြသနိုင်သော်လည်း စာရေးသူဖြစ်သည့် မိမိ Karl Seguin ကို ပြန်လည်ညွန်းဆိုရမည်ဖြစ်ပြီး စီးပွားဖြစ်သုံးစွဲခွင့်မပြုပါ။ 
 
-<http://creativecommons.org/licenses/by-nc/3.0/legalcode>
+
+ထိုလိုင်စင်၏ အရှည်ကောက်ကို အောက်ပါအတိုင်း ဖတ်ရှုနိုင်ပါသည်။
+
 
 ## About The Author
 
-Karl Seguin is a developer with experience across various fields and technologies. He's an active contributor to Open-Source Software projects, a technical writer and an occasional speaker. He's written various articles, as well as a few tools, about Redis. Redis powers the ranking and statistics of his free service for casual game developers: [mogade.com](http://mogade.com/).
+Karl Seguin သည် နည်းပညာနှင့်ပတ်သတ်သော ဘာသာရပ်များတွင် အတွေ့အကြုံများစွာရှိသည့် developer တစ်ဦးဖြစ်သည်။ ၎င်းသည် OSS Projects များကို တစ်စိတ်တစ်ပိုင်း contributor တစ်ဦးဖြစ်သည့် အပြင် နည်းပညာအကြောင်း ဟောပြောသူ နှင့် စာရေးသူ တစ်ဦးလည်း ဖြစ်သည်။ ၎င်းသည် redis နှင့်ပတ်သတ်သော article များ၊ tools များကိုလည်း ရေးသားသူတစ်ဦးဖြစ်သည်။ ၎င်း၏ game developer များအတွက် အခမဲ့ service ကို [mogade.com](http://mogade.com/) တွင်တွေ့နိုင်ပြီး Redis ကိုအသုံးပြုထားသည်။
 
-Karl wrote [The Little MongoDB Book](http://openmymind.net/2011/3/28/The-Little-MongoDB-Book/), the free and popular book about MongoDB.
+Karl သည် [The Little MongoDB Book](http://openmymind.net/2011/3/28/The-Little-MongoDB-Book/) ကိုလည်းရေးသားခဲ့ပါသေးသည်။
 
-His blog can be found at <http://openmymind.net> and he tweets via [@karlseguin](http://twitter.com/karlseguin)
+သူ၏ blog ကို  <http://openmymind.net> တွင်တွေ့နိုင်ပြီး ၎င်း၏ twitter handle မှာ  [@karlseguin](http://twitter.com/karlseguin) ဖြစ်သည်။
 
-## With Thanks To
 
-A special thanks to [Perry Neal](https://twitter.com/perryneal) for lending me his eyes, mind and passion. You provided me with invaluable help. Thank you.
+## ကျေးဇူးတင်လွှာ ##
+
+ သင်၏ မျက်လုံး စိတ်နှင့် ပြင်းထန်သော ဝါသနာများကို ငှားရမ်းမှုအတွက် [Perry Neal](http://twitter.com/perryneal) ကို အထူးပဲကျေးဇူးတင်ရှိရပါတယ်။ သင့်ရဲ့ကူညီမှုက တန်ဖိုးဖြတ်၍မရပါဘူး။ ကျေးဇူးပါ။
+
 
 ## Latest Version
 
-The latest source of this book is available at:
+စာအုပ်၏ နောက်ဆုံး version ကိုအောက်ပါလင့်တွင် ဖတ်ရှုနိုင်သည်။
 <http://github.com/karlseguin/the-little-redis-book>
 
-# Introduction
+# နိဒါန်း
 
-Over the last couple years, the techniques and tools used for persisting and querying data have grown at an incredible pace. While it's safe to say that relational databases aren't going anywhere, we can also say that the ecosystem around data is never going to be the same.
+ယခုနှစ်ပိုင်းတွင် data များကို တည်ဆောက်ခြင်းနှင့် query ပြုလုပ်သည့် နည်းပညာများသည် အလျင်အမြန်တိုးတက်လာသည်။ ထို့ကြောင့် relational database များသာ အသုံးပြုတော့မည် မဟုတ်ဟု သေချာစွာပြောနိုင်သလို data နှင့်ပတ်သတ်သော ecosystem များမှာလည်း အရင်ကတိုင်း တသမတ် တည်းတည်ရှိနေမည် မဟုတ်ပေ။ 
 
-Of all the new tools and solutions, for me, Redis has been the most exciting. Why? First because it's unbelievably easy to learn. Hours is the right unit to use when talking about length of time it takes to get comfortable with Redis. Secondly, it solves a specific set of problems while at the same time being quite generic. What exactly does that mean? Redis doesn't try to be all things to all data. As you get to know Redis, it'll become increasingly evident what does and what does not belong in it. And when it does, as a developer, it's a great experience.
+၎င်း tools အသစ်များနှင့် solution အသစ်များအကြား ကျွန်တော်အတွက်တော့ Redis သည်စိတ်လှုပ်ရှားစရာ အကောင်းဆုံးဖြစ်သည်။ အဘယ့်ကြောင့်ဆိုသော် ၎င်းသည် မယုံကြည်နိုင်လောက်အောင် လေ့လာရလွယ်ကူသည်။ နာရီပိုင်းအတွင်း Redis ကိုအသုံးပြုရသည်မှာ သက်တောင့်သက်တာရှိသည့် အနေအထားတစ်ခုကိုရနိုင်သည်။ ဒုတိယတစ်ခုမှာ ပုံမှန်ဖြစ်နေကြဖြစ်သော ပြဿနာတစ်ချို့တဝက်များကို ရိုးရိုးရှင်းရှင်း ဖြေရှင်းနိုင်သည်။ ဆိုလိုသည်မှာ Redis သည် data နှင့်ပတ်သတ်သည့် အရာအားလုံးကို ဖြေရှင်းရန် ကြိုးစားခြင်းမဟုတ်ပေ။ Redis ကိုသိလာသည့်နှင့် တဖြည်းဖြည်း ၎င်းသည် ဘာနှင့်သက်ဆိုင်ပြီး ဘာနှင့်မဆိုင်ဆိုသည်ကိုပါ ကွဲပြားလာလိမ့်မည်ဖြစ်ပြီး ထိုသို့ နားလည်ခြင်းသည် developer တစ်ဦးအတွက် ကောင်းမွန်သော အတွေ့အကြုံပင်ဖြစ်သည်။
 
-While you can build a complete system using Redis only, I think most people will find that it supplements their more generic data solution - whether that be a traditional relational database, a document-oriented system, or something else. It's the kind of solution you use to implement specific features. In that way, it's similar to an indexing engine. You wouldn't build your entire application on Lucene. But when you need good search, it's a much better experience - for both you and your users. Of course, the similarities between Redis and indexing engines end there.
 
-The goal of this book is to build the foundation you'll need to master Redis. We'll focus on learning Redis' five data structures and look at various data modeling approaches. We'll also touch on some key administrative details and debugging techniques.
+Redis တစ်ခုတည်းသာ အသုံးပြုပြီး system တစ်ခုလုံးတည်ဆောက်၍ ရသော်လည်း အများစုကတော့ ၎င်းတို့၏
+Relational Database ဖြစ်စေ၊ Document အခြေပြု database ဖြစ်စေ တည်ရှိပြီးသား data solution ၏ ဖြည့်ဖက်အဖြစ် အသုံးပြုသည်ကများသည်။ ထိုကြောင့် ၎င်းသည် အထူးပြု features များအတွက် implement ပြုလုပ်ရန်လိုသော solution တစ်ခုဖြစ်သည်။ ထိုသို့ဆိုပါက indexing engine တစ်ခုနှင့်ဆင်တူသည်။ သင့်အနေဖြင့် သင့် application တစ်ခုလုံးကို lucene ပေါ်တင်ထားမည် မဟုတ်။ သို့သော် developer အတွက်ဖြစ်စေ၊ user အတွက်ဖြစ်စေ search အတွက် experience ကောင်းကောင်း လိုအပ်ပါက Redis နှင့် Indexing engines များ၏ ဆင်တူမှုမှာ တခန်းရပ်ပြီဖြစ်သည်။
 
-# Getting Started
+ယခုစာအုပ်၏ ရည်ရွယ်ချက်မှာ redis ကိုကျွမ်းကျင်ရန် လိုအပ်သော အခြေခံများကို တည်ဆောက်ရန်ဖြစ်သည်။ ကျွန်တော်တို့ Redis ၏ အခြေခံ data structure ငါးခုနှင့် data model ပြုလုပ်သည့် approach များကိုလေ့လာသွားမည်ဖြစ်သည်။ ထိုအပြင် administrative ပြုလုပ်ရာတွင်နှင့် debug ပြုလုပ်ရာတွင် လိုအပ်သော နည်းပညာများကိုပါ ဆက်၍ ပြောပြသွားပါမည်။
 
-We all learn differently: some like to get their hands dirty, some like to watch videos, and some like to read. Nothing will help you understand Redis more than actually experiencing it. Redis is easy to install and comes with a simple shell that'll give us everything we need. Let's take a couple minutes and get it up and running on our machine.
+# အစပျိုး
 
-## On Windows
 
-Redis itself doesn't officially support Windows, but there are options available. You wouldn't run these in production, but I've never experienced any limitations while doing development.
+ကျွန်တော်တို့ တဦးချင်စီ လေ့လာသည် ပုံစံမတူညီကြ။ တချို့မှ စမ်း၍ သင်သည်က အလုပ်ဖြစ်သည်၊ တချို့မှာ video များကြည့်ပြီး သင်ရသည်ကိုကြိုက်သည်။ တချို့မှာ စာဖတ်ခြင်းဖြင့်။ Redis တွင်မူ စမ်းကြည့်သည်က အလုပ်အဖြစ်ဆုံးဖြစ်သည်။ redis သည်သွင်းရသည်မှာ လွယ်ကူပြီး လိုအပ်သည်များကို ဆောင်ရွက်ရန် ရိုးရှင်းသည့် shell interface မှာလည်း ပါဝင်ပြီး ဖြစ်သည်။ ထိုကြောင့် အချိန်အနည်းငယ်ပေးပြီး စက်ထဲ run ၍ရအောင် လုပ်ဆောင်ကြပါစို့။
 
-A port by Microsoft Open Technologies, Inc. can be found at <https://github.com/MSOpenTech/redis>. As of this writing the solution is not ready for use in production systems.
+## Windows တွင်
 
-Another solution, which has been available for some time, can be found at <https://github.com/dmajkic/redis/downloads>. You can download the most up to date version (which should be at the top of the list). Extract the zip file and, based on your architecture, open either the `64bit` or `32bit` folder.
+Redis သည် windows ကို တရားဝင် support မလုပ်သော်လည်း အခြားရွေးချယ်စရာနည်းလမ်းများရှိသည်။ ၎င်းတို့ကို production တွင် run ၍ရမည် မဟုတ်သော်လည်း development အတွက် ထူးထူးခြားခြားကန့်သတ်ထားသည်ကို မတွေ့ရပါ။
 
-## On *nix and MacOSX
+Microsoft Open Technologies ၏ port တစ်ခုဖြစ်သော repo ကို <https://github.com/MSOpenTech/redis> တွင်တွေ့ရမည်ဖြစ်ပြီး နောက် solution တစ်ခုကို <https://github.com/dmajkic/redis/downloads> တွင်တွေ့ရမည်။ 
+သင့်၏ version ပေါ်မူတည်၍ `64bit` နှင့် `32bit` အကြားရွေးချယ်နိုင်သည်။
 
-For *nix and Mac users, building it from source is your best option. The instructions, along with the latest version number, are available at <http://redis.io/download>. At the time of this writing the latest version is 3.0.3; to install this version we would execute:
+## MacOSX နှင့် *nix များတွင် 
+
+MacOSX နှင့် *nix များအတွက် source မှ build ပြုလုပ်ခြင်းသည် အကောင်းဆုံးဖြစ်သည်။ နောက်ဆုံး version များနှင့် instruction များကို <http://redis.io/download> တွင်တွေ့နိုင်သည်။  At the time of this writing the latest version is 3.0.3; to install this version we would execute:
 
 	wget http://download.redis.io/releases/redis-3.0.3.tar.gz
 	tar xzf redis-3.0.3.tar.gz
 	cd redis-3.0.3
 	make
 
-(Alternatively, Redis is available via various package managers. For example, MacOSX users with Homebrew installed can simply type `brew install redis`.)
+ထိုအပြင် Redis သည် package manager အတော်များများတွင်လည်း တွေ့ရှိနိုင်သည်။ ဥပမာ homebrew ရှိသော MacOSX အသုံးပြုသူများ အနေဖြင့်  `brew install redis` ဟုသွင်းနိုင်သည်။
 
-If you built it from source, the binary outputs have been placed in the `src` directory. Navigate to the `src` directory by executing `cd src`.
+source မှ build ပြုလုပ်ပါက binary များကို `src` direcotry အောက်တွင်တွေ့ရမည်ဖြစ်သည်။ `src` directory သို့ navigate ပြုလုပ်နိုင်ရန် `cd src` ဟု ပြောင်းလိုက်ပါ။
 
-## Running and Connecting to Redis
+## Redis ကိုချိတ်ဆက်ခြင်း 
 
-If everything worked, the Redis binaries should be available at your fingertips. Redis has a handful of executables. We'll focus on the Redis server and the Redis command line interface (a DOS-like client). Let's start the server. In Windows, double click `redis-server`. On *nix/MacOSX run `./redis-server`.
 
-If you read the start up message you'll see a warning that the `redis.conf` file couldn't be found. Redis will instead use built-in defaults, which is fine for what we'll be doing.
+အားလုံး အဆင်ပြေသွားပါက Redis binary များသည် သင့်၏ လက်အောက်တွင်ရှိနေမည် ဖြစ်သည်။ Redis တွင် အသုံးဝင်သည် executable အတော်များများရှိသည်။ ယခုတွင်မူ Redis server နှင့် Command Line Interface ကိုအဓိကထားပြောပြသွားမည်။
+ပထမဆုံး server ကိုစတင်ရန် windows ဆိုပါက `redis-server` ကို double click ပြုလုပ်ပါ။ *nix/MacOSX များတွင် `./redis-server` ဟု run လိုက်ပါ။
 
-Next start the Redis console by either double clicking `redis-cli` (Windows) or running `./redis-cli` (*nix/MacOSX). This will connect to the locally-running server on the default port (6379).
+ပေါ်လာသော message များကိုကြည့်ပါက  `redis.conf` ကိုမရှိ ဟုတွေ့ကောင်းတွေ့ရမည်ဖြစ်သော်လည်း Redis တွင် built-in default ကိုအသုံးပြုမည်ဖြစ်သဖြင့် လက်ရှိအနေဖြင့် အဆင်ပြေပါသည်။
 
-You can test that everything is working by entering `info` into the command line interface. You'll hopefully see a bunch of key-value pairs which provide a great deal of insight into the server's status.
+ထိုနောက် windows ဆိုပါက `redis-cli` ကို double click နှိပ်ခြင်းဖြင့် ၊ (*nix/MacOSX) ဆိုပါက `./redis-cli` ဟု run ခြင်းဖြင့် စတင်နိုင်သည်။ ၎င်းသည် local တွင် run နေသည် server ကို default port (6379) မှတဆင့်ချိတ်ဆက်သွားမည်။
 
-If you are having problems with the above setup I suggest you seek help in the [official Redis support group](https://groups.google.com/forum/#!forum/redis-db).
+အားလုံး အလုပ်သေချာလုပ်မလုပ်ကို `info` ဟုရိုက်ထည့်ပြီး စမ်းသပ်နိုင်သည်။ သင့်အနေဖြင့် server ၏ အခြေအနေများကို ဖော်ပြသော insight များကို key-value pair များအဖြစ်တွေ့ရမည်ဖြစ်မည်။
 
-# Redis Drivers
+setup နှင့်ပတ်သတ်ပြီး အခက်အခဲတွေ့ပါက [official Redis support group](https://groups.google.com/forum/#!forum/redis-db) တွင် မေးမြန်းနိုင်သည်။
 
-As you'll soon learn, Redis' API is best described as an explicit set of functions. It has a very simple and procedural feel to it. This means that whether you are using the command line tool, or a driver for your favorite language, things are very similar. Therefore, you shouldn't have any problems following along if you prefer to work from a programming language. If you want, head over to the [client page](http://redis.io/clients) and download the appropriate driver.
+# Redis Driver များ
 
-# Chapter 1 - The Basics
+မကြာမီ လေ့လာရမည့် အတိုင်း Redis ၏ API သည် function များအနေဖြင့် တည်ရှိသည်။ အလွန်ရိုးရှင်းပြီး Procedural ပုံစံဆန်သည်။ ထိုကြောင့် command line tool များသုံးသည်ဖြစ်စေ ၊ driver မှအသုံးပြုသည်ဖြစ်စေ ခပ်ဆင်ဆင်ပင်ဖြစ်သည်။
+ထို့ကြောင့် မည်သည့် programming langauge မှ အလုပ်လုပ်သည် ဖြစ်စေ အခက်အခဲများစွာ တွေ့ရမည် မဟုတ်ပါ။ ၎င်းတို့ကို 
+[client page](http://redis.io/clients) တွင်တွေ့ရှိနိုင်ပြီး အလိုရှိရာ driver များ download ဆွဲနိုင်သည်။
 
-What makes Redis special? What types of problems does it solve? What should developers watch out for when using it? Before we can answer any of these questions, we need to understand what Redis is.
+# အခန်း (၁) အခြေခံ
 
-Redis is often described as an in-memory persistent key-value store. I don't think that's an accurate description. Redis does hold all the data in memory (more on this in a bit), and it does write that out to disk for persistence, but it's much more than a simple key-value store. It's important to step beyond this misconception otherwise your perspective of Redis and the problems it solves will be too narrow.
+Redis သည် ဘာကြောင့် special ဖြစ်တာလဲ ၊ မည်သို့သော ပြဿနာများဖြေရှင်းထားသလဲ၊ အသုံးပြုပါက developer များက ဘာကို သတိပြုရမည်နည်း၊ ထိုမေးခွန်းများကို မဖြေခင် Redis ဆိုသည်မှာ ဘာလဲဆိုသည်ကို နားလည်ရန်လိုသည်။ 
 
-The reality is that Redis exposes five different data structures, only one of which is a typical key-value structure. Understanding these five data structures, how they work, what methods they expose and what you can model with them is the key to understanding Redis. First though, let's wrap our heads around what it means to expose data structures.
+Redis သည် အများအားဖြင့် in-memory persistent key-value store တစ်ခုအနေဖြင့် သတ်မှတ်ခြင်းခံရသော်လည်း ကျွန်တော်အနေဖြင့် ၎င်းကို မျှတသည့် သတ်မှတ်ချက်တစ်ခုဟု မထင်။ Redis တွင် data များအားလုံးကို memory တွင် hold ပြုလုပ်ထားနိုင်ပြီး persistence အနေဖြင့် disk ပေါ်တွင် write ပြုလုပ်နိုင်သော်လည်း ၎င်းသည် သာမန် key-value store တစ်ခုထက်ပိုသည်။ ၎င်းထက်ပိုကျော်၍ မတွေးထားပါက redis နှင့်ပတ်သတ်သော သင့်၏ အမြင်နဲ့ ဖြေရှင်းနိုင်သည် များမှာ ကျဉ်းမြောင်းနေမည်ဖြစ်သည်။
 
-If we were to apply this data structure concept to the relational world, we could say that databases expose a single data structure - tables. Tables are both complex and flexible. There isn't much you can't model, store or manipulate with tables. However, their generic nature isn't without drawbacks. Specifically, not everything is as simple, or as fast, as it ought to be. What if, rather than having a one-size-fits-all structure, we used more specialized structures? There might be some things we can't do (or at least, can't do very well), but surely we'd gain in simplicity and speed?
+လက်တွေ့တွင် Redis သည် မတူညီသော data structure ငါးမျိုးကို ထုတ်ဖော်ပေးပြီး ၎င်းတို့အနက် တစ်မျိုးကသာ ထုံးတမ်းစဉ်လာ key-value structure ဖြစ်သည်။ ၎င်း data structure ငါးမျိုးကို မည်သို့အလုပ်လုပ်သည် မည်သည် method များရှိသည်နှင့် မည်သို့ model များတည်ဆောက်နိုင်သည်ကို နားလည်ခြင်းကသာ Redis ကိုအမှန်တကယ် နားလည်ခြင်းဖြစ်သည်။ ပထမဆုံး data structure များ ဖော်ထုတ်သည်ကို တချက်ကြည့်ရအောင်။ 
 
-Using specific data structures for specific problems? Isn't that how we code? You don't use a hashtable for every piece of data, nor do you use a scalar variable. To me, that defines Redis' approach. If you are dealing with scalars, lists, hashes, or sets, why not store them as scalars, lists, hashes and sets? Why should checking for the existence of a value be any more complex than calling `exists(key)` or slower than O(1) (constant time lookup which won't slow down regardless of how many items there are)?
+အကယ်၍ relational world မှ data structure များကို ပမာပြု၍ ပြောပါက database များသည် data structure တစ်မျိုးတည်သာ ဖော်ထုတ်ပေးသည်ဖြစ်သည်။ ၎င်းမှာ table ဖြစ်သည်။ table များသည် ရှုပ်ထွေးပြီး flexible ဖြစ်သည်။ model လုပ်၍ store ၍ manipulate ပြု၍မရသည် သိပ်များများမရှိ။ သို့သော် ထိုသို့ ဘက်စုံအသုံးပြုနိုင်ခြင်းသည် အားနည်းချက်မရှိသည်သော မဟုတ်။ အထူးသဖြင့် လိုချင်သလောက် မမြန်ခြင်းဖြစ်သည်။ အကယ်၍ အားလုံးသုံး၍ရနိုင်သော data-structure တစ်ခုတည်းထက်စာလျှင် အထူးပြု structure များအသုံးပြုပါက မည်သို့ဖြစ်မည်နည်း။ အကန့်အသတ်ရှိမည်ဖြစ်သော်လည်း ရိုးရှင်းမှုနှင့် speed ကိုရမည်မှာ အမှန်ဖြစ်သည်။
 
-# The Building Blocks
 
-## Databases
+အထူးပြု data strcuture များကို အသုံးပြု၍ အထူး ပြဿနာများကို ဖြေရှင်းခြင်း သည် code ကောင်းကောင်းမွန်မွန် မရေးထားခြင်းကို ဆိုလိုထားသည်လော ၊ data များအတွက် hashtable များ အသုံးမပြုဘူးလား ၊ scalar variable များအသုံးမပြုဘူးလား ဟု မေးစရာရှိသည်။ ကျွန်တော်အတွက်တော့ Redis ၏ approach သည် scalar များ၊ list များ၊ hash နှင့် set များကို အသုံးပြုပါက ၎င်းတို့အတိုင်း ဘာလို့ မသိမ်းသနည်း ကိုမေးခွန်းထုတ်ထားခြင်းဖြစ်သည်။ value တစ်ခုတည်ရှိသည်ကို ဆန်းစစ်လိုပါက အဘယ်ကြောင့် `exists(key)` ဟုသာမခေါ်ပဲ ရှုပ်ထွေးစွာ query ပြုလုပ်နေသနည်း။
+
+
+# အခြေခံအုတ်မြစ်များ
+
+## Database များ
 
 Redis has the same basic concept of a database that you are already familiar with. A database contains a set of data. The typical use-case for a database is to group all of an application's data together and to keep it separate from another application's.
 
