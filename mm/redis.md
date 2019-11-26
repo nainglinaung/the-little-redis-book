@@ -3,13 +3,14 @@
 ## လိုင်စင်
 
 
-The Little MongoDB စာအုပ်သည်  Attribution-NonCommercial 3.0 Unported လိုင်စင် အောက်တွင် တည်ရှိသဖြင့်  **ထိုစာအုပ်အတွက် အခကြေးငွေ ပေးဆောင်ခြင်းမပြုရပါ။**
+The Little Redis စာအုပ်သည်  Attribution-NonCommercial 3.0 Unported လိုင်စင် အောက်တွင် တည်ရှိသဖြင့်  **ထိုစာအုပ်အတွက် အခကြေးငွေ ပေးဆောင်ခြင်း မပြုရပါ။**
 
-ထိုစာအုပ်ကို အခမဲ့ ကူးယူ၊ မျှဝေ၊ ပြင်ဆင်၊ ပြသနိုင်သော်လည်း စာရေးသူဖြစ်သည့် မိမိ Karl Seguin ကို ပြန်လည်ညွန်းဆိုရမည်ဖြစ်ပြီး စီးပွားဖြစ်သုံးစွဲခွင့်မပြုပါ။ 
+ထိုစာအုပ်ကို အခမဲ့ ကူးယူ၊ မျှဝေ၊ ပြင်ဆင်၊ ပြသနိုင်သော်လည်း စာရေးသူဖြစ်သည့် မိမိ Karl Seguin ကို ပြန်လည် ညွန်းဆိုရမည် ဖြစ်ပြီး စီးပွားဖြစ် သုံးစွဲခွင့်မပြုပါ။ 
 
 
 ထိုလိုင်စင်၏ အရှည်ကောက်ကို အောက်ပါအတိုင်း ဖတ်ရှုနိုင်ပါသည်။
 
+<http://creativecommons.org/licenses/by-nc/3.0/legalcode>
 
 ## About The Author
 
@@ -56,11 +57,11 @@ Microsoft Open Technologies ၏ port တစ်ခုဖြစ်သော repo �
 
 ## MacOSX နှင့် *nix များတွင် 
 
-MacOSX နှင့် *nix များအတွက် source မှ build ပြုလုပ်ခြင်းသည် အကောင်းဆုံးဖြစ်သည်။ နောက်ဆုံး version များနှင့် instruction များကို <http://redis.io/download> တွင်တွေ့နိုင်သည်။  At the time of this writing the latest version is 3.0.3; to install this version we would execute:
+MacOSX နှင့် *nix များအတွက် source မှ build ပြုလုပ်ခြင်းသည် အကောင်းဆုံးဖြစ်သည်။ နောက်ဆုံး version များနှင့် instruction များကို <http://redis.io/download> တွင်တွေ့နိုင်သည်။  At the time of this writing the latest version is 5.0.7; to install this version we would execute:
 
-	wget http://download.redis.io/releases/redis-3.0.3.tar.gz
-	tar xzf redis-3.0.3.tar.gz
-	cd redis-3.0.3
+	wget http://download.redis.io/releases/redis-5.0.7.tar.gz
+	tar xzf redis-5.0.7.tar.gz
+	cd redis-5.0.7
 	make
 
 ထိုအပြင် Redis သည် package manager အတော်များများတွင်လည်း တွေ့ရှိနိုင်သည်။ ဥပမာ homebrew ရှိသော MacOSX အသုံးပြုသူများ အနေဖြင့်  `brew install redis` ဟုသွင်းနိုင်သည်။
@@ -105,79 +106,85 @@ Redis သည် အများအားဖြင့် in-memory persistent key
 
 ## Database များ
 
-Redis has the same basic concept of a database that you are already familiar with. A database contains a set of data. The typical use-case for a database is to group all of an application's data together and to keep it separate from another application's.
+Redis သည် သင် ရင်းနှီးနေသော database များ၏ အခြေခံ concept အတူတူပင်ဖြစ်သည်။ database တစ်ခုတွင် data များပါဝင်ပြီး database တစ်ခု၏ အခြေခံအသုံးမှာ application ၏ data များကိုစုစည်းထားကာ အခြား application တစ်ခုဖြင့်ခွဲခြားထားသည်။
 
-In Redis, databases are simply identified by a number with the default database being number `0`. If you want to change to a different database you can do so via the `select` command. In the command line interface, type `select 1`. Redis should reply with an `OK` message and your prompt should change to something like `redis 127.0.0.1:6379[1]>`. If you want to switch back to the default database, just enter `select 0` in the command line interface.
+Redis တွင် database များကို နံပါတ်အနေဖြင့် တည်ရှိပြီး default database မှာ `0` ဖြစ်သည်။ အခြား database ကိုပြောင်းလိုပါက `select` ကိုအသုံးပြုနိုင်သည်။ command line တွင် `select 1` ဟုရိုက်လိုက်ပါက `OK` ဟု reply ပြန်မည်ဖြစ်ပြီး prompt ၏ title သည် `redis 127.0.0.1:6379[1]>` ဟုပြောင်းသွားလိမ့်မည်။ default database ကိုပြန်ပြောင်းလိုပါက `select 0` ဟုရိုက်ပြီး ပြောင်းနိုင်သည်။
 
-## Commands, Keys and Values
+## Commands၊  Keys နှင့် Values
 
-While Redis is more than just a key-value store, at its core, every one of Redis' five data structures has at least a key and a value. It's imperative that we understand keys and values before moving on to other available pieces of information.
+redis သည် key-value store ထက်ပိုသော်လည်း ၎င်း၏ အခြေခံဖြစ်သည့် data structure ငါးမျိုးသည် key တစ်ခုနှင့် value တစ်ခုစီပုံစံဖြစ်သည်။ ထိုကြောင့် အခြားအရာများကိုမလေ့လာခင် key နှင့် value များအကြောင်းကို အရင်ဆုံးလေ့လာသင့်သည်။
 
-Keys are how you identify pieces of data. We'll be dealing with keys a lot, but for now, it's good enough to know that a key might look like `users:leto`. One could reasonably expect such a key to contain information about a user named `leto`. The colon doesn't have any special meaning, as far as Redis is concerned, but using a separator is a common approach people use to organize their keys.
+Key များသည် data များကို identify ပြုလုပ်ရန်ဖြစ်ပြီး ၎င်းကိုအများဆုံးအသုံးပြုကြသော်လည်း ယခုမူ key များ၏ပုံစံကို `users:leto` ဟု သိထားရန်လိုသည်။ ထိုသို့ဖြင့် user တစ်ဦး၏ အမည်ဖြစ်သော် `leto` ကိုသိမ်းထားသည် ဟုသိနိုင်သည်။ ထို column များသည် redis အနေဖြင့် မည်သို့မျှ ထူးခြားသည့် အဓိပ္ပါယ်မရှိသော်လည်း မြင်သာအောင် အသုံးပြုသည့် ပုံစံတစ်ခုဖြစ်သည်။
 
-Values represent the actual data associated with the key. They can be anything. Sometimes you'll store strings, sometimes integers, sometimes you'll store serialized objects (in JSON, XML or some other format). For the most part, Redis treats values as a byte array and doesn't care what they are. Note that different drivers handle serialization differently (some leave it up to you) so in this book we'll only talk about string, integer and JSON.
+value များသည် key များညွန်းဆို အမှန်တကယ်တည်ရှိသည့် data များဖြစ်သည်။ ၎င်းတို့သည် အမျိုးစုံဖြစ်နိုင်သည်။ တခါတရံ string များ ၊ တခါတရံ integer ၊ တခါတရံ serialized object များ (JSON,XML နှင့် အခြားသော format များ) အချိန်တော်တော်များများတွင် redis ၎င်း value များကို byte array အဖြစ်သိမ်းထားမည်ဖြစ်ပြီး ဂရုမစိုက်ပါ။ သတိပြုရန်မှာ မတူညီသော driver များသည် serialization ကို ကွဲပြားစွာ handle လုပ်မည်ဖြစ်ပြီး ထိုကြောင့် ယခုစာအုပ်တွင်မူ string ၊ integer နှင့် JSON များကိုသာဖော်ပြသွားမည်။
 
-Let's get our hands a little dirty. Enter the following command:
+စမ်းကြည့်ကြပါစို့။ အောက်ပါအတိုင်းရိုက်ထည့်ကြည့်ပါ။
 
 	set users:leto '{"name": "leto", "planet": "dune", "likes": ["spice"]}'
 
-This is the basic anatomy of a Redis command. First we have the actual command, in this case `set`. Next we have its parameters. The `set` command takes two parameters: the key we are setting and the value we are setting it to. Many, but not all, commands take a key (and when they do, it's often the first parameter). Can you guess how to retrieve this value? Hopefully you said (but don't worry if you weren't sure!):
+၎င်းသည် redis command တစ်ခု၏ အခြေခံပုံစံဖြစ်သည်။ ပထမဆုံးတည်ရှိမည်မှာ command ဖြစ်ပြီး ယခုကိစ္စတွင် `set` ဖြစ်သည်။ `set` command တွင် parameter နှစ်ခုပါဝင်ပြီး set ပြုလုပ်မည့် key များနှင့် value များဖြစ်သည်။ အကုန်မဟုတ်သော်လည်း တချို့ command များတွင် key တစ်ခုကိုယူလေ့ရှိသည်။ (ထိုသို့ပြုလုပ်ပါက ပထမ parameter အနေဖြင့် ဖြစ်သည်) အပေါ်မှ ဥပမာကို မည်သို့ retrive ပြန်လုပ်မည်နည်း။ အောက်ကအတိုင်းဖြစ်သည်။
 
 	get users:leto
 
-Go ahead and play with some other combinations. Keys and values are fundamental concepts, and the `get` and `set` commands are the simplest way to play with them. Create more users, try different types of keys, try different values.
+တခြားပြောင်း၍ စမ်းကြည့်ကြပါ။ key နှင့် value များသည် အခြေခံ concept များဖြစ်ပြီး `get` နှင့် `set` သည် အရိုးရှင်းဆုံး စမ်းကြည့်၍ရနိုင်သည်။ user တစ်ခုဆောက်ကြည့်၊ အမျိုးမတူသော key များ နှင့် value များကို ထည့်ကြည့်ကြပါ။
 
-## Querying
+## Query ပြုလုပ်ခြင်း
 
-As we move forward, two things will become clear. As far as Redis is concerned, keys are everything and values are nothing. Or, put another way, Redis doesn't allow you to query an object's values. Given the above, we can't find the user(s) which live on planet `dune`.
+ရှေ့ဆက်သွားပါက နှစ်ခုမှာ ပို၍ရှင်းလင်းလာမည်ဖြစ်ပြီး redis အနေဖြင့် key သည်အရာ အားလုံးဖြစ်ပြီး value မှာဘာမှသုံးမရပါ။ တနည်းအားဖြင့် redis တွင် object ၏ value ဖြင့် query ပြုလုပ်၍ရမည်မဟုတ်။ အပေါ်မှ ဥပမာအရ 
+`dune` ဂြိုလ်တွင်နေထိုင်သော user များကိုရှာ၍ရမည်မဟုတ်။
 
-For many, this will cause some concern. We've lived in a world where data querying is so flexible and powerful that Redis' approach seems primitive and unpragmatic. Don't let it unsettle you too much. Remember, Redis isn't a one-size-fits-all solution. There'll be things that just don't belong in there (because of the querying limitations). Also, consider that in some cases you'll find new ways to model your data.
+တော်တော်များများ ၎င်းသည် အကျပ်ရိုက်စရာဖြစ်ပါလိမ့်မည်။ ကျွန်တော်တို့အသုံးပြုနေသော data query ပြုလုပ်နိုင်သည်များသည် ပို၍ flexible ဖြစ်ပြီး powerful ဖြစ်သဖြင့် Redis ၏ approach သည် ယုတ္တိမတန်သလို နှင့်ရှေးကျသလိုဖြစ်နေသည်။ သို့သော် ၎င်းကို စိတ်မပူပါနှင့်။ သတိပြုရမည်မှာ redis သည် အားလုံးကိုဖြေရှင်းနိုင်သော solution မဟုတ်ပါ။ တချို့သောအရာများသည် ၎င်းနှင့်သက်ဆိုင်သည်အရာများ မဟုတ် ( query လုပ်ရသည်မှာ အကန့်အသတ်ရှိသဖြင့်)  ထိုအပြင် အချို့သောအချိန်မှာတွင် သင့် data ကို model ပြုလုပ်ရန် နည်းလမ်းအသစ်များကို ရှာဖွေတွေ့ရှိပါလိမ့်မည်။
 
-We'll look at more concrete examples as we move on, but it's important that we understand this basic reality of Redis. It helps us understand why values can be anything - Redis never needs to read or understand them. Also, it helps us get our minds thinking about modeling in this new world.
+ပို၍ ခိုင်မာသော example များကို နောက်ပိုင်းတွင်တွေ့လာရမည်ဖြစ်ပြီး အဓိက နားလည်ရမည်မှာ ၎င်းသည် redis ၏ ထုံးစံဖြစ်သည်။ ထို့ကြောင့် value များသည် အားလုံးဖြစ်နိုင်ကြောင်း နှင့် redis ကို ဖတ်နိုင်ရန် သိထားရန် မလိုကြောင်း နားလည်ရန်လိုမည်။ ထိုအပြင် ယခု ပုံစံအသစ်အတိုင်း model ပြုလုပ်ရန် စေ့ဆော်ပေးသည်။
 
-## Memory and Persistence
+## Memory နှင့် Persistence
 
-We mentioned before that Redis is an in-memory persistent store. With respect to persistence, by default, Redis snapshots the database to disk based on how many keys have changed. You configure it so that if X number of keys change, then save the database every Y seconds. By default, Redis will save the database every 60 seconds if 1000 or more keys have changed all the way to 15 minutes if 9 or less keys has changed.
 
-Alternatively (or in addition to snapshotting), Redis can run in append mode. Any time a key changes, an append-only file is updated on disk. In some cases it's acceptable to lose 60 seconds worth of data, in exchange for performance, should there be some hardware or software failure. In some cases such a loss is not acceptable. Redis gives you the option. In chapter 6 we'll see a third option, which is offloading persistence to a slave.
+Redis သည် memory အပေါ်ရှိ persistent store တစ်ခုဖြစ်ကြောင်းသိရှိပြီးဖြစ်သည်။  persistence အကြောင်းဆိုပါက default အနေဖြင့် redis သည် key များမည်မျှ ပြောင်းလဲသည်ကို စောင့်ကြည့်နေပြီး database ကို snapshot ပြုလုပ်သည်ဖြစ်သည်။ သင့်အနေဖြင့် key များမည်မျှပြောင်းလဲသွားသည်ကို ဖြစ်စေ ၊ ဘယ်လောက်စက္ကန့်အတွင်း snapshot ပြုလုပ်မည်ကို configure ပြုလုပ်နိုင်သည်။ Redis သည် default အနေဖြင့် database အတွင်း စက္ကန့် ၆၀ အတွင်း key အခုတစ်ထောင်ပို၍ ပြောင်းလဲပါက save မည်ဖြစ်သလို key ၉ ခုအောက် ပြောင်းပါက ၁၅ မိနစ်တစ်ခါ save မည်ဖြစ်သည်။
 
-With respect to memory, Redis keeps all your data in memory. The obvious implication of this is the cost of running Redis: RAM is still the most expensive part of server hardware.
 
-I do feel that some developers have lost touch with how little space data can take. The Complete Works of William Shakespeare takes roughly 5.5MB of storage. As for scaling, other solutions tend to be IO- or CPU-bound. Which limitation (RAM or IO) will require you to scale out to more machines really depends on the type of data and how you are storing and querying it. Unless you're storing large multimedia files in Redis, the in-memory aspect is probably a non-issue. For apps where it is an issue you'll likely be trading being IO-bound for being memory bound.
+Snapshot ပြုလုပ်သည့်အပြင် redis သည် append mode အနေဖြင့်လည်း run နိုင်သည်။ key တစ်ခုပြောင်းပါက append ပြုလုပ်ထားသော file ကိုပါ disk ပေါ်တွင် update ပြုလုပ်ပေးသည်။ အချီု့အချိန်များတွင် hardware သို့မဟုတ် software failure များဖြစ်ပါက စက္ကန့် ၆၀ အတွင်း ဖြစ်ပေါ်နေသော data များကို ဆုံးရှုံးသည်ကို လက်ခံနိုင်သည့် အနေအထားရှိပြီး performance ကပို၍ အရေးပါသည်။ အချို့အချိန်များတွင်မူ ထိုဆုံးရှုံးမှုများကို လက်မခံနိုင်ပါ။ Redis အနေဖြင့် ရွေးချယ်စရာများပေးထားပြီး အခန်း (၆) တွင်မူ တတိယ နည်းလမ်းဖြစ်သည့် slave ဆီသို့ persistence offload ပြုလုပ်သည်ကို တွေ့ရမည်။
 
-Redis did add support for virtual memory. However, this feature has been seen as a failure (by Redis' own developers) and its use has been deprecated.
+Memory အနေဖြင့်ကြည့်ပါ Redis တွင်ရှိသမျှ အချက်အလက်အားလုံးကို memory တွင်ထားမည်ဖြစ်သည်။ Redis ကို runခြင်း ၏ သိသာထင်ရှားသော ကုန်ကျစရိတ်မှာ Memory ဖြစ်ပြီး RAM သည် server hardware များအတွင်း စျေးအကြီးဆုံးဖြစ်သည်။
 
-(On a side note, that 5.5MB file of Shakespeare's complete works can be compressed down to roughly 2MB. Redis doesn't do auto-compression but, since it treats values as bytes, there's no reason you can't trade processing time for RAM by compressing/decompressing the data yourself.)
+အချို့ developer များသည် space နည်းနည်းဖြင့် data များကို သိမ်းဆည်းရသည်ကို မေ့လျော့ကုန်သည်ဟုထင်ရသည်။ ဝီလီယံ ရှိတ်စပီယား၏ ဝတ္ထုအားလုံး စုစုပေါင်းသည် 5.5MB ခန့်သာ ကုန်ကျမည်ဖြစ်သည်။ Scaling အတွက်မူ တခြား solution များသည် IO သို့မဟုတ် CPU အပေါ်မူတည်နေသည်။ RAM သို့မဟုတ် IO ၏ limitation များမှာ မည်သည့် data အမျိုးအစားနှင့် မည့်ကဲသို သိမ်းဆည်းမည်နှင့် query ပြုလုပ်မည့် အပေါ်မူတည်သည်။ Redis အတွင်းတွင် အင်မတန်ကြီးမားသော multimedia file များကို သိမ်းဆည်းခြင်းမှ အပ memory ပြဿနာ ပုံမှန်အားဖြင့် အသေးအဖွဲ့ကများသည်။ တချို့ app များတွင် CPU ကိုမူတည်ခြင်းထက် Memory မူတည်ခြင်းဖြင့် လဲလှယ်ရသည်က ပိုအဆင်ပြေသည်။ 
 
-## Putting It Together
 
-We've touched on a number of high level topics. The last thing I want to do before diving into Redis is to bring some of those topics together. Specifically, query limitations, data structures and Redis' way to store data in memory.
+Redis အနေဖြင့် virtual memory အသုံးပြုမှုကို support ပြုလုပ်ခဲ့သော်လည်း ထို feature ကို Redis ၏ developer များကိုယ်တိုင် failure အဖြစ်မြင်ခဲ့ကြပြီး ၎င်းအသုံးပြုမှုကို ရပ်တန့်ခဲ့သည်။
 
-When you add those three things together you end up with something wonderful: speed. Some people think "Of course Redis is fast, everything's in memory." But that's only part of it. The real reason Redis shines versus other solutions is its specialized data structures.
+( 5.5MB ရှိသော Shakspear ၏စာမူအာလုံးကို ချုံ့လိုက်ပါက 2MB အထိရနိုင်သည်။ Rdis များ အလိုအလျောက် ချုံ့မပေးသော်လည်း ၎င်း၏ byte တစ်ခုချင်းဆီကို တန်ဖိုးထားသော်ကြောင့် compress နှင့် decompress ပြုလုပ်ခြင်းဖြင့် procession time နှင့် RAM ကိုလဲလှယ်နိုင်သည် )
 
-How fast? It depends on a lot of things - which commands you are using, the type of data, and so on. But Redis' performance tends to be measured in tens of thousands, or hundreds of thousands of operations **per second**. You can run `redis-benchmark` (which is in the same folder as the `redis-server` and `redis-cli`) to test it out yourself.
 
-I once changed code which used a traditional model to using Redis. A load test I wrote took over 5 minutes to finish using the relational model. It took about 150ms to complete in Redis. You won't always get that sort of massive gain, but it hopefully gives you an idea of what we are talking about.
+## ပြန်လည်စုစည်းခြင်း
 
-It's important to understand this aspect of Redis because it impacts how you interact with it. Developers with an SQL background often work at minimizing the number of round trips they make to the database. That's good advice for any system, including Redis. However, given that we are dealing with simpler data structures, we'll sometimes need to hit the Redis server multiple times to achieve our goal. Such data access patterns can feel unnatural at first, but in reality it tends to be an insignificant cost compared to the raw performance we gain.
+ကျွန်တော်တို့ အပေါ်စီးမှ topic များအကြောင်း စတင်ထိတွေ့ခဲ့ပြီးပါပြီ။ Redis ကို အဓိက မလေ့လာခင် ထို အကြောင်းအရာများကို ပြန်လည်စုစည်းရန်လိုသည်။ အထူးသဖြင့် query ၏ အကန့်အသတ်များ ၊ data structure နှင့် Redis ၏ memory အတွင်းတွင် data သိမ်းဆည်းခြင်းတို့ ဖြစ်သည်။
 
-## In This Chapter
+ထိုအကြောင်းအရာသုံးခုကို စုစည်းလိုက်ပါက သင့်အနေဖြင့် ပိုပြီးကောင်းမွန်သော ရလဒ် ဖြစ်သည် speed ကိုရမည်ဖြစ်သည်။ တချို့သူများအနေဖြင့် "Redis ကမြန်မှာပေါ့ Memory ပေါ်မှာပဲ အားလုံးအလုပ်လုပ်တာပဲ" ဟုဆိုကောင်းဆိုနိုင်မည် ဖြစ်သောလည်း ၎င်းသည် အကြောင်းအရာတစ်ခုသာဖြစ်သည်။ တကယ့် Redis သည် အခြား solution များအကြား ထင်ပေါ်နေသည်မှာ ၎င်း၏ အထူးပြုထားသော data structure များကြောင့်ဖြစ်သည်။
 
-Although we barely got to play with Redis, we did cover a wide range of topics. Don't worry if something isn't crystal clear - like querying. In the next chapter we'll go hands-on and any questions you have will hopefully answer themselves.
+ဘယ်လောက်မြန်သလဲ? ၎င်းသည် အရာတော်တော်များများ ပေါ်မူတည်နေသည် မည်သည့် command များကိုအသုံးပြုသည်၊ မည်သည့် data အမျိုးအစား၊ နှင့် အခြားကိစ္စများဖြစ်သည်။ သို့သော် Redis ၏ performance သည် **တစက္ကန့်** ကို သောင်းနဲ့ သိန်းနဲ့ချီပြီး run နိုင်ပြီး သင့်အနေဖြင့် (`redis-server` နှင့် `redis-cli` များရှိသော folder အတွင်းတွင်တည်ရှိသည့်) `redis-benchmark` ကိုအသုံးပြု၍ စမ်းသပ်နိုင်သည်။
 
-The important takeaways from this chapter are:
+ပုံမှန် project တစ်ခုကို redis သို့ပြောင်းဖူးသည်။ load test တစ်ခုတွင် relational model ကိုအသုံးပြုပါက ၅ မိနစ်ခန့် ကြာသည်။ Redis တွင် ၁၅၀ မီလီစက္ကန့်သာကြာသည်။ ယခုလိုမျိုး အဆများစွာ ကွာခြားမည်ဟု အမြဲတမ်းယုံကြည်နိုင်မည် မဟုတ်သော်လည်း အခြေခံကိုတော့ သဘောပေါက်မည်ဖြစ်သည်။
 
-* Keys are strings which identify pieces of data (values)
+Redis ၏ နားလည်ရန်လိုသည် အရေးကြီးသည့်အချက်မှာ သင့် interact လုပ်သည့်အပေါ်မူတည်၏ ပြောင်းလဲမည်ဖြစ်သည်။ SQL background မှလာသော developer များသည် database နှင့် ဆက်သွယ်ရသည့် round trip ကိုတက်နိုင်သမျှ အနည်းဆုံးဖြစ်အောင် လုပ်မည်ဖြစ်သည်။ ၎င်းသည် redis အပါအဝင် မည်သည့် system အတွက်မဆိုကောင်းသော အလေ့အထဖြစ်သော်လည်း မိမိတို့ကိုင်တွယ်ရသည်မှာ ပို၍ရိုးရှင်းသော data structure များဖြစ်သဖြင့် တခါတရံ redis server ကိုကြိမ်ဖန်များစွာ hit ပြီးမှ လိုအပ်သည်ရသည့် အခါမျိုးလည်းရှိသည်။ ထိုသို့သော data access pattern များသည် အစောပိုင်းတွင် အသားကျမည် မဟုတ်သော်လည်း လက်တွေ့တွင် ထိုသို့ပြုလုပ်ခြင်းသည် ပေးဆပ်ရသည်က နည်းလှပြီး ထိုသည်နှင့်ရသည့် performance gain မှာ အဆမတန်ဖြစ်သည်။
 
-* Values are arbitrary byte arrays that Redis doesn't care about
+## ယခု အခန်းတွင်
 
-* Redis exposes (and is implemented as) five specialized data structures
+Redis နှင့် ခဏလေးသာထိတွေ့ရသော်လည်း topic အများအပြားကို ပြောဖြစ်ခဲ့သည်။ query ပြုလုပ်ခြင်းကဲ့သို့ တချို့အရာများကို မသဲကွဲသေးလျင်လည်း စိတ်မပူပါနှင့်။ နောက် အခန်းများတွင် လက်တွေ့ဘက်သွားမည်ဖြစ်ပြီး စိတ်ကူးထားသော မေးခွန်းများအတွက် အဖြေများထွက်လာပါလိမ့်မည်။
 
-* Combined, the above make Redis fast and easy to use, but not suitable for every scenario
+ယခုအခန်၏ အဓိကကျသော အချက်များမှာ
 
-# Chapter 2 - The Data Structures
+* key များသည် data များကို (value များ) identify ပြုလုပ်ရန် string များဖြစ်သည်
 
-It's time to look at Redis' five data structures. We'll explain what each data structure is, what methods are available and what type of feature/data you'd use it for.
+* Value များသည် Redis အနေဖြင့် ဂရုမစိုက်ထားသော byte array များဖြစ်သည်
+
+* Redis အနေဖြင့် အထူးပြု data structure ငါးခုရှိသည်။
+
+* ပေါင်းစပ် အသုံးခြင်းဖြင့် Redis သည် အသုံးပြုရလွယ်ကူပြီး လျင်မြန်သောလည်း အခြေအနေတိုင်းအတွက် သင့်တော်သည် မဟုတ်။
+
+
+# အခန်း ၂ - Data Structure များ
+
+Redis ၏ data structure ၅ မျိုးကို လေ့လာကြပါစို့။ data structure တစ်ခုချင်းဆီ၏ method များနှင့် feature များကိုရှင်းပြပါမည်။
 
 The only Redis constructs we've seen so far are commands, keys and values. So far, nothing about data structures has been concrete. When we used the `set` command, how did Redis know what data structure to use? It turns out that every command is specific to a data structure. For example when you use `set` you are storing the value in a string data structure. When you use `hset` you are storing it in a hash. Given the small size of Redis' vocabulary, it's quite manageable.
 
