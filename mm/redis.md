@@ -186,15 +186,18 @@ Redis နှင့် ခဏလေးသာထိတွေ့ရသော်လ�
 
 Redis ၏ data structure ၅ မျိုးကို လေ့လာကြပါစို့။ data structure တစ်ခုချင်းဆီ၏ method များနှင့် feature များကိုရှင်းပြပါမည်။
 
-The only Redis constructs we've seen so far are commands, keys and values. So far, nothing about data structures has been concrete. When we used the `set` command, how did Redis know what data structure to use? It turns out that every command is specific to a data structure. For example when you use `set` you are storing the value in a string data structure. When you use `hset` you are storing it in a hash. Given the small size of Redis' vocabulary, it's quite manageable.
+လက်ရှိအထိ Redis တွင် အတွေ့အများဆုံးမှာ commands များနှင့် key နှင့် value များဖြစ်သည်။ အခုထိ data structure ကြောင်း တိတိပပ မလေ့လာရသေးပါ။ `set` command ကိုအသုံးပြုပါက redis အနေဖြင့် မည်သည့် data structure ကိုအသုံးပြုသနည်း? command တစ်ခုတိုင်းသည် data structure တစ်ခုချင်းစီကို အထူးပြုနေသည်။ ဥပမာ `set` ကိုအသုံးပြုပါက value ကို string data structure ထဲသို့ သိမ်းမည်ဖြစ်သည်။ `hset` ဟုသုံးပါက hash အတွင်းတွင် သိမ်းမည်ဖြစ်သည်။ Redis ၏ vocabulary သည်သိပ်မများလှသဖြင့် အဆင်ပြေသည်ဟု ဆိုရမည်။
 
-**[Redis' website](http://redis.io/commands) has great reference documentation. There's no point in repeating the work they've already done. We'll only cover the most important commands needed to understand the purpose of a data structure.**
 
-There's nothing more important than having fun and trying things out. You can always erase all the values in your database by entering `flushdb`, so don't be shy and try doing crazy things!
+**[Redis' website](http://redis.io/commands)** သည် အတော်ကောင်းမွန်သော documentation ဖြစ်သည်။ ၎င်းတို့ လုပ်ပြီးသား အလုပ်ကို ထပ်လုပ်ရန် အကြောင်းမရှိပါ။ အခုစာအုပ်တွင် data structure ကိုနားလည်ရန် အရေးအကြီးဆုံး command များကိုသာ ညွန်ပြသွားပါမည်။
 
-## Strings
+
+၄င်တို့ထက် အရေးကြီးသည်မှာ စမ်းကြည့်ပြီး ပေါ့ပေါ့ပါးပါးလေ့လာနိုင်ရန်ဖြစ်သည်။ သင့်အနေဖြင့် database မှ value အားလုံးကို `flushdb` ဟုရိုက်ထည့်ကာ ဖျက်ပစ်နိုင်သည်။ ထို့ကြောင့် ဘာမှ အားမနာပဲ စမ်းကြည့်ကြတာပေါ့!
 
-Strings are the most basic data structures available in Redis. When you think of a key-value pair, you are thinking of strings. Don't get mixed up by the name, as always, your value can be anything. I prefer to call them "scalars", but maybe that's just me.
+## String များ
+
+
+String များသည် redis တွင်ပါဝင်သော အခြေခံအကျဆုံး data structure ဖြစ်သည်။ key-value pair တစ်ခုကို တွေးမိပါက string များကို ပထမဦးစွာ တွေးမိမည်ဖြစ်သည်။ သို့သော် နာမည်ကြောင့် မရှုပ်ထွေးပါနဲ့။ ထုံးစံအတိုင်း value များသည် အရာအားလုံးဖြစ်နိုင်သည်။ ကျွန်တော် အနေဖြင့်ဆိုရင် scalar ဟုပင် ခေါ်စေချင်သည်။ ကျွန်တော် အမြင်သက်သက်သာဖြစ်သည်။
 
 We already saw a common use-case for strings, storing instances of objects by key. This is something that you'll make heavy use of:
 
