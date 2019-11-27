@@ -16,6 +16,7 @@ The book is freely distributed under the  [Attribution-NonCommercial 3.0 Unporte
 * [Chinese 2](https://github.com/geminiyellow/the-little-redis-book/)
 * [Japanese](https://github.com/craftgear/the-little-redis-book/)
 * [Spanish](https://github.com/raulexposito/the-little-redis-book)
+* [Burmese](https://github.com/nainglinaung/the-little-redis-book)
 
 ## Formats ##
 The book is written in [Markdown](http://daringfireball.net/projects/markdown/) and converted to PDF using [Pandoc](http://johnmacfarlane.net/pandoc/).
@@ -55,7 +56,7 @@ Packages:
 
 #### Building
 
-Run `make en/redis.epub`.
+Run `make mm/redis.epub`.
 
 ### Mobi
 
@@ -69,7 +70,7 @@ You should have [KindleGen](http://www.amazon.com/gp/feature.html?ie=UTF8&docId=
 
 #### Building
 
-Run `make en/redis.mobi`.
+Run `make mm/redis.mobi`.
 
 ## Title Image ##
 A PSD of the title image is included. The font used is [Comfortaa](http://www.dafont.com/comfortaa.font).

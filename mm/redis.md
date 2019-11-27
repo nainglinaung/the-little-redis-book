@@ -199,11 +199,11 @@ Redis ၏ data structure ၅ မျိုးကို လေ့လာကြပ�
 
 String များသည် redis တွင်ပါဝင်သော အခြေခံအကျဆုံး data structure ဖြစ်သည်။ key-value pair တစ်ခုကို တွေးမိပါက string များကို ပထမဦးစွာ တွေးမိမည်ဖြစ်သည်။ သို့သော် နာမည်ကြောင့် မရှုပ်ထွေးပါနဲ့။ ထုံးစံအတိုင်း value များသည် အရာအားလုံးဖြစ်နိုင်သည်။ ကျွန်တော် အနေဖြင့်ဆိုရင် scalar ဟုပင် ခေါ်စေချင်သည်။ ကျွန်တော် အမြင်သက်သက်သာဖြစ်သည်။
 
-We already saw a common use-case for strings, storing instances of objects by key. This is something that you'll make heavy use of:
+String များ၏ အသုံးများသော use-case ကိုတွေ့ပြီးဖြစ်ပြီး object များ၏ instance များကို string အနေဖြင့် သိမ်းဆည်းခြင်းဖြစ်သည်။ ၎င်းသည် သင့်အနေဖြင့် အများအားဖြင့်သုံးမည့် အလေ့အထ တစ်ခုဖြစ်သည်။
 
 	set users:leto '{"name": leto, "planet": dune, "likes": ["spice"]}'
 
-Additionally, Redis lets you do some common operations. For example `strlen <key>` can be used to get the length of a key's value; `getrange <key> <start> <end>` returns the specified range of a value; `append <key> <value>` appends the value to the existing value (or creates it if it doesn't exist already). Go ahead and try those out. This is what I get:
+ထပ်၍ Redis အနေဖြင့် တခြားသော operation များလည်း ဆောင်ရွက်ခွင့်ပေးသည်။ ဥပမာ `strlen <key>` ဟု အသုံးပြု၍ key ၏ value ၏ အရှည်ကို ရနိုင်သလို ၊ `getrange <key> <start> <end>` ပါက value ၏ အထူးပြုထားသော range ကိုလည်းရနိုင်ပြီး၊ `append <key> <value>` ဆိုပါက ရှိပြီးသား value မှ (မရှိသေးပါက အသစ်ပြုလုပ်ပြီး) append ပြုလုပ်ပေးသည်။ ထိုကြောင့် စမ်းကြည့်ပါ ကျွန်တော် စမ်းကြည့်တုံးက ဒီလိုရပါတယ်။
 
 	> strlen users:leto
 	(integer) 50
@@ -214,9 +214,9 @@ Additionally, Redis lets you do some common operations. For example `strlen <key
 	> append users:leto " OVER 9000!!"
 	(integer) 62
 
-Now, you might be thinking, that's great, but it doesn't make sense. You can't meaningfully pull a range out of JSON or append a value. You are right, the lesson here is that some of the commands, especially with the string data structure, only make sense given specific type of data.
+မိုက်တော့ မိုက်ပါတယ် ဒါပေမယ့် အဓိပ္ပါယ်မရှိဘူး ဟု တွေးကောင်းတွေးပါလိမ့်မည်။ JSON မှ range တစ်ခုကို pull ဖို့နှင့် value တစ်ခုကို appendဖို့မှာ အဓိပ္ပါယ်မရှိပါ။ မှန်ပါသည်။ ယခု သင်ခန်းစာမှာ အချို့သော command များနှင့် string data structure ကိုအသုံးပြု၍ စမ်းသပ်ကြည့်ခြင်းဖြစ်ပြီး အချို့သော data အမျိုးအစားမှသာ အဓိပ္ပါယ်ရှိနိုင်မည်။
 
-Earlier we learnt that Redis doesn't care about your values. Most of the time that's true. However, a few string commands are specific to some types or structure of values. As a vague example, I could see the above `append` and `getrange` commands being useful in some custom space-efficient serialization. As a more concrete example I give you the `incr`, `incrby`, `decr` and `decrby` commands. These increment or decrement the value of a string:
+အစောပိုင်းတွင် Redis သည် သင့်၏ value များကို ဂရုမစိုက် ဟုပြောခဲ့ပြီး ၎င်းမှာ ကိစ္စအတော်များများအတွက် မှန်ကန်သော်လည်း string command အချို့မှာ အချို့သော အမျိုးအစားများနျင့် value structure များတွင်သာ သုံး၍ရသည်။ ဥပမာအနေဖြင့် `append` နှင့် `getrange` များသည် အချို့သော space အသုံးပြု serialization များအတွက် အသုံးဝင်ပါလိမ့်မည်။ ပို၍ ခိုင်မာသော ဥပမာအနေဖြင့် `incr`၊ `incrby`၊ `decr` နှင့် `decrby` command များရှိပြီး ၎င်းသည် string တစ်ခု၏ value ကို တိုးရာ လျှော့ရာတွင် အသုံးပြုသည်။
 
 	> incr stats:page:about
 	(integer) 1
@@ -228,20 +228,20 @@ Earlier we learnt that Redis doesn't care about your values. Most of the time th
 	> incrby ratings:video:12333 3
 	(integer) 8
 
-As you can imagine, Redis strings are great for analytics. Try incrementing `users:leto` (a non-integer value) and see what happens (you should get an error).
+ထိုကြောင့် redis string များသည် analytics များအတွက် အသုံးပြုနိုင်သည်။ `users:leto` (integer မဟုတ်သော value) ကိုတိုးကြည့်ပြီး ဘာဖြစ်မလဲဆိုသည်ကို စောင့်ကြည့်ပါ (error ပေါ်လာရပါမည်)
 
-A more advanced example is the `setbit` and `getbit` commands. There's a [wonderful post](http://blog.getspool.com/2011/11/29/fast-easy-realtime-metrics-using-redis-bitmaps/) on how Spool uses these two commands to efficiently answer the question "how many unique visitors did we have today". For 128 million users a laptop generates the answer in less than 50ms and takes only 16MB of memory.
+ပို၍ advanced ဖြစ်သော ဥပမာမှာ `setbit` နှင့် `getbit` တို့ဖြစ်သည်။ ၎င်းအတွက် ယနေ့အတွက် သင့် ဘလော့ကို unique visitor ဘယ်နှစ်ယောက်ရှိသလဲဆိုသည်ကို တည်ဆောက်ထားသည်  [post](http://blog.getspool.com/2011/11/29/fast-easy-realtime-metrics-using-redis-bitmaps/) ကိုဖတ်ကြည့်ပါ။ ၁၂၈ သန်းသော user များအတွက် laptop တစ်ခုမှ စွမ်းဆောင်နိုင်သော အဖြေသည် 50ms အတွင်းပြီးပြီး Memory 16MB မျှသာကုန်သည်။
 
-It isn't important that you understand how bitmaps work, or how Spool uses them, but rather to understand that Redis strings are more powerful than they initially seem. Still, the most common cases are the ones we gave above: storing objects (complex or not) and counters. Also, since getting a value by key is so fast, strings are often used to cache data.
+bitmap များဘယ်လိုအလုပ်လုပ်သည် နှင့် ၎င်းကို ဘယ်လိုအသုံးပြုသွားသလဲဆိုသည်က အရေးမကြီး ထိုက်ထက် Redis ၏ string များသည် မူလက မြင်သည့်ထက်ပို၍ powerful ဖြစ်သည်ကို သိရန်ဖြစ်သည်။ သို့ပင်သော်လည်း အများဆုံးအသုံးပြုသည့် အခြေအနေများမှာ အပေါ်မှ ပြောခဲ့သလို object များကို သိမ်းဆည်းခြင်း (ရှုပ်ထွေးသည်ဖြစ်စေ) နှင့် counter များအတွက်ဖြစ်သည်။ ထိုအပြင် value တစ်ခုကို key မှရယူခြင်းသည် အလွန်မြန်ဆန်သဖြင့် string များသည် data များကို cache ရန်အသုံးပြုသည်။
 
-## Hashes
+## Hash များ
 
-Hashes are a good example of why calling Redis a key-value store isn't quite accurate. You see, in a lot of ways, hashes are like strings. The important difference is that they provide an extra level of indirection: a field. Therefore, the hash equivalents of `set` and `get` are:
+Hash များသည် Redis ၏ key-value များသိမ်းဆည်းခြင်းသည် အတိအကျမဖြစ်ကြောင်းကို ပြသနိုင်သည် ဥပမာဖြစ်သည်။ အချိန်တော်တော်များများတွင် hash များသည် string များနှင့်တူညီပြီး အဓိကကွာခြားချက်မှာ field များဖြစ်သည်။ ထိုကြောင့် `set` နှင့် `get` တို့၏ ပုံစံတူမှာ အောက်ပါအတိုင်းဖြစ်သည်။
 
 	hset users:goku powerlevel 9000
 	hget users:goku powerlevel
 
-We can also set multiple fields at once, get multiple fields at once, get all fields and values, list all the fields or delete a specific field:
+field များစွာကို တစ်ခါတည်း set ၍လည်းရသလို field များစွာ တစ်ခါတည်း get ရပြီး field များကို list လုပ်ခြင်းနှင့် field တစ်ခုစီကို delete လုပ်ခြင်းများပြုလုပ်နိုင်သည်။
 
 	hmset users:goku race saiyan age 737
 	hmget users:goku race powerlevel
@@ -249,71 +249,74 @@ We can also set multiple fields at once, get multiple fields at once, get all fi
 	hkeys users:goku
 	hdel users:goku age
 
-As you can see, hashes give us a bit more control over plain strings. Rather than storing a user as a single serialized value, we could use a hash to get a more accurate representation. The benefit would be the ability to pull and update/delete specific pieces of data, without having to get or write the entire value.
+သင်မြင်သည့်အတိုင်း hash များသည် ရိုးရိုး string များထက်ပို၍ ထိန်းချုပ်ရလွယ်ကူသည်။ user တစ်ဦးကို serialize value တစ်ခုအနေဖြင့် သိမ်းမည့်အစား hash ဖြင့်သိမ်းဆည်းပါက ပို၍ တိကျသော ညွန်ပြမှုကို ရရှိနိုင်သည်။ အကျိုးအမြတ်အနေဖြင့် value တစ်ခုလုံးပြန်လည်ရေးသားရန်မလိုပဲ လိုချင်သော data ၏ အပိုင်းအစများကို ဆွဲထုတ်၊ ပြင်ဆင် ၊ ဖျက်နိုင်ခြင်းဖြစ်သည်။
 
-Looking at hashes from the perspective of a well-defined object, such as a user, is key to understanding how they work. And it's true that, for performance reasons, more granular control might be useful. However, in the next chapter we'll look at how hashes can be used to organize your data and make querying more practical. In my opinion, this is where hashes really shine.
+အသေအချာတည်ဆောက်ထားသော object တစ်ခု၏ အမြင်မှ hash များကိုကြည့်ပါက ဥပမာဖြစ်သည့် user တစ်ဦးသည် ၎င်းတို့ကို နားလည်ရန် အဓိက သော့ချက်ဖြစ်သည်။ ထို့အပြင် performance ရှုထောင်ကလည်း ၎င်း၏ တိကျသော ထိန်းချုပ်မှုသည် အသုံးဝင်လောက်သည်။ နောက်အခန်းများတွင် hash များကို အသုံးပြု၍ data များကို မည့်သို့ စီစဉ်ရမည် နှင့် လက်တွေ့တွင် မည့်သို့ query ပြုလုပ်ရမည်ကို ပြောသွားပါ့မည်။ ထိုအချက်သည် hash များ၏ အဓိက အားသာချက်ဖြစ်သည်။
 
-## Lists
+## List များ
 
-Lists let you store and manipulate an array of values for a given key. You can add values to the list, get the first or last value and manipulate values at a given index. Lists maintain their order and have efficient index-based operations. We could have a `newusers` list which tracks the newest registered users to our site:
+
+List များသည် key တစ်ခုစီ၏ array value များကို သိမ်းဆည်းပြင်ဆင်နိုင်သည်။ list တွင် value များကိုထည့်နိုင် ၊ ဦးဆုံးနှင့် နောက်ဆုံးနှင့် index အတိုင်း value များကိုရယူပြင်ဆင်နိုင်သည်။ list များသည် အစီအစဉ်အတိုင်းတည်ရှိပြီး index အခြေပြု operation များတွင် အလွန် အသုံးဝင်သည်။ site ကို register လုပ်သော user အသစ်များကို track ပြုလုပ်ရန် `newusers` ကိုဆောက်နိုင်သည်။
 
 	lpush newusers goku
 	ltrim newusers 0 49
 
-First we push a new user at the front of the list, then we trim it so that it only contains the last 50 users. This is a common pattern. `ltrim` is an O(N) operation, where N is the number of values we are removing. In this case, where we always trim after a single insert, it'll actually have a constant performance of O(1) (because N will always be equal to 1).
+ရှေးဦးစွာ list ၏ အရှေ့းဆုံးသို့ user အသစ်တစ်ဥိးပို့လိုက်ပြီးနောက် အယောက် ငါးဆယ်သာပါရန် trim လုပ်လိုက်ပါသည်။ ၎င်းသည် သုံးနေကြပုံစံဖြစ်ပြီး `ltrim` သည် O(N) operation ဖြစ်သဖြင့် N သည် move လုပ်သော value အရေအတွက်ဖြစ်သည်။ ထိုအခြေအနေတွင် insert တစ်ခုလုပ်ပြီးတိုင်း trim ပြုလုပ်ပါက constant performance အနေဖြင့် O(1) ကိုရရှိမည်ဖြစ်သည် (N သည် 1 ဖြင့်အမြဲတူသောကြောင့်)
 
-This is also the first time that we are seeing a value in one key referencing a value in another. If we wanted to get the details of the last 10 users, we'd do the following combination:
+ယခုသည် ပထမဆုံးအကြို key တစ်ခု၏ value သည် အခြားတစ်ခုကို reference ∆ပုလုပ်သည်ကို မြင်ဖူးခြင်းဖြစ်သည်။ အကယ်၍ နောက်ဆုံး ဆယ်ယောက်၏ အသေးစိတ်ကိုသိလိုပါက အောက်ပါအတိုင်း ပြုလုပ်နိုင်သည်။
 
 	ids = redis.lrange('newusers', 0, 9)
 	redis.mget(*ids.map {|u| "users:#{u}"})
+	
 
-The above is a bit of Ruby which shows the type of multiple roundtrips we talked about before.
+အပေါ်မှ ဥပမာတွင် Ruby အနည်းငယ်ပါဝင်ပြီး ကျွန်တော်တို့ အသုံးပြုနေသည့် roundtrips များအကြောင်းကို ပြလိုက်သလိုပါပဲ။ list များသည် အခြား key များ၏ reference များကိုသိမ်းဆည်းရန်တွင်မကပါ။ value များသည် အမျိုးစုံဖြစ်နိုင်သည်။ log ၏ list များကို သိမ်းဆည်းထားနိုင်သလိုု user တစ်ဦး site ထဲဝင်ကြည့်သည့် လမ်းကြောင်းကိုလည်း သိမ်းဆည်းထားနိုင်သည်။ game တစ်ခုကို တည်ဆောက်နေပါက user တစ်ဦး၏ action များကို စောင့်ကြည့်နိုင်သည်။
 
-Of course, lists aren't only good for storing references to other keys. The values can be anything. You could use lists to store logs or track the path a user is taking through a site. If you were building a game, you might use one to track queued user actions.
+## Set များ
 
-## Sets
 
-Sets are used to store unique values and provide a number of set-based operations, like unions. Sets aren't ordered but they provide efficient value-based operations. A friend's list is the classic example of using a set:
+set များသည် unique ဖြစ်သည့် value များကိုသိမ်းဆည်းထားနိုင်ပြီး union ကဲ့သို့သော set အခြေပြု operation များကို အထောက်အပံပေးထားသည်။ set များသည် order လိုက်မဟုတ်သော်လည်း အသုံးဝင်သည့် value အခြေပြု operation များရှိသည်။ friend list များသည် ဥပမာတစ်ခုဖြစ်သည်။ 
 
 	sadd friends:leto ghanima paul chani jessica
 	sadd friends:duncan paul jessica alia
 
-Regardless of how many friends a user has, we can efficiently tell (O(1)) whether userX is a friend of userY or not:
+
+user တစ်ဦးတိုင်းတွင် friend မည့်မျှ ရှိသည်ဖြစ်စေ userX သည် userY ၏ သူငယ်ချင်း ဟုတ်မဟုတ် ကို (O(1)) အနေဖြင့် ပြောပြနိုင်သည်။
 
 	sismember friends:leto jessica
 	sismember friends:leto vladimir
 
-Furthermore we can see whether two or more people share the same friends:
+ထိုအပြင် နှစ်ဦးထက်ပိုသော သူများ ၎င်းတို့၏ သူငယ်ချင်းများ တူကြသလားဆိုသည်ကိုပင် သိနိုင်သည်။
 
 	sinter friends:leto friends:duncan
 
-and even store the result at a new key:
+ထိုအပြင် key အသစ်အဖြစ် သိမ်းဆည်းနိုင်ပါသေးသည်။
 
 	sinterstore friends:leto_duncan friends:leto friends:duncan
 
-Sets are great for tagging or tracking any other properties of a value for which duplicates don't make any sense (or where we want to apply set operations such as intersections and unions).
+Set များသည် value တစ်ခု၏ အခြား property များ ထပ်နေသောအခါ tag နှင့် track ပြုလုပ်ခြင်းများအတွက် ကောင်းမွန်သည်။ (သို့မဟုတ် intersection နှင့် union များပြုလုပ်ရာတွင် )
 
-## Sorted Sets
+## စီထားသော Set များ
 
-The last and most powerful data structure are sorted sets. If hashes are like strings but with fields, then sorted sets are like sets but with a score. The score provides sorting and ranking capabilities. If we wanted a ranked list of friends, we might do:
+နောက်ဆုံး powerful အဖြစ်ဆုံးသော data  structure မှာ sorted set များဖြစ်သည်။ hash သည် string နှင့်တူ၍ field များအပိုပါသည်ဟု ဆိုရပါလျှင် sorted set များသည် set နှင့် အတူတူပင်ဖြစ်သော်လည်း score များပါသည်။ ၎င်း score များသည် sorting နှင့် ranking ပြုလုပ်ရာတွင် အထောက်အကူပြုသည်။ အကယ်၍ သူငယ်ချင်းများ၏ ranked list ကို အလိုရှိပါက အောက်ပါအတိုင်း ဆောင်ရွက်နိုင်သည်။
 
 	zadd friends:duncan 70 ghanima 95 paul 95 chani 75 jessica 1 vladimir
 
-Want to find out how many friends `duncan` has with a score of 90 or over?
+`duncan` ဟုခေါ်သည့် သူသည် score 90 ကျော်သည် သူငယ်ချင်း မည်မျှရှိသနည်း?
 
 	zcount friends:duncan 90 100
 
-How about figuring out `chani`'s rank?
+ထိုအထဲမှ `chani` ၏ rank ကိုသိချင်ပါက?
 
 	zrevrank friends:duncan chani
 
-We use `zrevrank` instead of `zrank` since Redis' default sort is from low to high (but in this case we are ranking from high to low). The most obvious use-case for sorted sets is a leaderboard system. In reality though, anything you want sorted by some integer, and be able to efficiently manipulate based on that score, might be a good fit for a sorted set.
+`zrank` အစား `zrevrank` ကိုသုံးရသည်မှာ redis ၏ default sort သည် ငယ်ရာမှာကြီးရာဖြစ်သောကြောင့်ဖြစ်သည် (ယခုကိစ္စတွင်မူ ranking မှာ high မှ low သို့ဖြစ်သည်) sorted set ၏ အထင်ရှားဆုံး use case မှာ leaderboard system ဖြစ်သည်။ လက်တွေ့တွင် သင့်အနေဖြင့် integer အသုံးပြု၍ sort လိုသည့်အရာတိုင်းကို အလုပ်ဖြစ်အောင် score အတိုင်း manipulate လုပ်နိုင်သည်က ၎င်း၏ အားသာချက်ဖြစ်သည်။
 
-## In This Chapter
+## ယခုအခန်းတွင်
 
-That's a high level overview of Redis' five data structures. One of the neat things about Redis is that you can often do more than you first realize. There are probably ways to use string and sorted sets that no one has thought of yet. As long as you understand the normal use-case though, you'll find Redis ideal for all types of problems. Also, just because Redis exposes five data structures and various methods, don't think you need to use all of them. It isn't uncommon to build a feature while only using a handful of commands.
+၎င်းသည် redis ၏ data structure ငါးခု၏ အခြေခံအကြောင်းအရာကိုမှာ အထက်ပါအတိုင်းဖြစ်သည်။ Redis ၏ မိုက်သော အချက်မှာ ကိုယ်ထင်ထားသည်ထက်ပို၍ လုပ်နိုင်ခြင်းဖြစ်သည်။ string နှင့် sorted set များကို ကျွန်တော်တို့ မတွေးထားသည့် အတိုင်း သုံးနိုင်သည့် ပုံစံများလည်းရှိဦးမည်။ ပုံမှန်သုံးနေကြပုံစံများသိသည့်တိုင်အောင် သင့်အနေဖြင့် Redis ကိုင်တွယ်နိုင်သော ပြဿနာများကို သတိထားမိပါလိမ့်မည်။ ထိုအပြင် redis အနေဖြင့် ငါးခုကို support လုပ်ထားသောကြောင့် အားလုံးကို သုံးရန်လိုမည်ဟုတ် မထင်ပါနှင့်။ အချို့သော system များသည်  command အနည်းငယ်သာသုံးလိုက်ရသည်လည်းရှိပါသေးသည်။
 
-# Chapter 3 - Leveraging Data Structures
+
+# အခန်း (၃) - Data Structure များအကြောင်းထပ်လောင်း
 
 In the previous chapter we talked about the five data structures and gave some examples of what problems they might solve. Now it's time to look at a few more advanced, yet common, topics and design patterns.
 
