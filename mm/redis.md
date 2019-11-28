@@ -318,84 +318,87 @@ Set များသည် value တစ်ခု၏ အခြား property မ�
 
 # အခန်း (၃) - Data Structure များအကြောင်းထပ်လောင်း
 
-In the previous chapter we talked about the five data structures and gave some examples of what problems they might solve. Now it's time to look at a few more advanced, yet common, topics and design patterns.
+အရင် အခန်းများတွင် datastructure ၅ ခု အကြောင်း ၊ ဥပမာများနှင့် ၎င်းတို့ဖြေရှင်းနိုင်သည့် ပြဿနာများအကြောင်း ပြောပြီးဖြစ်သည်။ ယခုအခန်းတွင်မူ ပို၍ advanced ဖြစ်ပြီး လက်တွေ့ကျသော topics များနှင့် design pattern များအကြောင်းပြောပါမည်။
 
 ## Big O Notation
 
-Throughout this book we've made references to the Big O notation in the form of O(n) or O(1). Big O notation is used to explain how something behaves given a certain number of elements. In Redis, it's used to tell us how fast a command is based on the number of items we are dealing with.
+ဒီစာအုပ်တအုပ်လုံးတွင် Big O notation ကို ဥပမာအနေဖြင့် O(n) သို့မဟုတ် O(1) ဟုသာပြောဆိုခဲ့ပြီးဖြစ်သည်။ Big O notation သည် element မည်မျှတွင် မည့်သို့ ဆောင်ရွက်သနည်းကို ရှင်းပြသည့်နေရာတွင် အသုံးဝင်သည်။ Redis တွင်မူ command ၏ အမြန်နှုန်းသည် မည်မျှမြန်ဆန်သည်ကို ရှင်းပြရန် ပြောသည်။
 
-Redis documentation tells us the Big O notation for each of its commands. It also tells us what the factors are that influence the performance. Let's look at some examples.
+Redis documentation အနေဖြင့် command တစ်ခုချင်းစီ၏ Big O notation များကို ပြသထားသည်။ ၎င်းသည် performance ကိုပိုမိုကောင်းမွန်စေရန် မည့်သည့် factor များကို အလေးထားရမည်ကို ညွန်းဆိုနေသလိုဖြစ်သည်။ အောက်ပါ ဥပမာများကို ကြည့်ပါ။
 
-The fastest anything can be is O(1) which is a constant. Whether we are dealing with 5 items or 5 million, you'll get the same performance. The `sismember` command, which tells us if a value belongs to a set, is O(1). `sismember` is a powerful command, and its performance characteristics are a big reason for that. A number of Redis commands are O(1).
+O(1) ၏ အမြန်ဆုံးမှာ constant ဖြစ်သည်။ item ၅ ခုနှင့် လုပ်သည်ဖြစ်စေ ၅ သန်းဖြင့် လုပ်သည်ဖြစ်စေ ကြာချိန်မှာ အတူတူဖြစ်သည်။ `sismember` command ဖြင့် value တစ်ခုသည် set တွင် ရှိနေသည် ဟုတ်မဟုတ်ကို ဆန်းစစ်နိုင်သည်။ `sismember` သည် powerful ဖြစ်သော command တစ်ခုဖြစ်ပြီး ၎င်းသည် performance အနေအထားသည်လည် O(1) ဖြစ်သည်။ Redis command အချို့မှာ O(1) ဖြစ်သည်။
 
-Logarithmic, or O(log(N)), is the next fastest possibility because it needs to scan through smaller and smaller partitions. Using this type of divide and conquer approach, a very large number of items quickly gets broken down in a few iterations. `zadd` is a O(log(N)) command, where N is the number of elements already in the sorted set.
+Lograithmic သို့မဟုတ် O(log(N)) သည် ဒုတိယအမြန်ဆုံး ဖြစ်နိုင်ချေတစ်ခုဖြစ်ပြီး ၎င်းသည် ပို၍ပို၍ သေးငယ်သော partitation များကို scan ဖတ်ရ၍ဖြစ်သည်။ ၎င်းကဲ့သို့ divide & conqueror နည်းလမ်းကို အသုံးပြု၍ item အများကြီးကို iteration အနည်းငယ့်ဖြင့် run ၍ရအောင် စွမ်းဆောင်ပေးသည်။ `zadd` သည် O(log(N)) ဖြစ်ပြီး N သည် sorted set အတွင်းရှိသော element အရေအတွက်ဖြစ်သည်။
 
-Next we have linear commands, or O(N). Looking for a non-indexed column in a table is an O(N) operation. So is using the `ltrim` command. However, in the case of `ltrim`, N isn't the number of elements in the list, but rather the elements being removed. Using `ltrim` to remove 1 item from a list of millions will be faster than using `ltrim` to remove 10 items from a list of thousands. (Though they'll probably both be so fast that you wouldn't be able to time it.)
+ထိုနောက် linear command ဝါ O(N) ဖြစ်ပြီး ၎င်းသည် index မဟုတ်ထားသော table အတွင်းရှိcolumn တစ်ခုကိုရှာပါက O(N) ဖြစ်သည်။ ထို့ကြောင့် `ltrim` ကဲ့သို့ command မျိုးသည် အကျုံးဝင်သည်။ သို့သော် `ltrim` ကိစ္စတွင် N သည် list အတွင်းရှိ element မဟုတ်ပဲ remove ပြုလုပ်လိုက်သော element အရေအတွက်ရှိသည်။ ထိုကြောင့် `ltrim` ကိုအသုံးပြုပြီး တစ်သန်းလောက်ရှိသော list မှ item တစ်ခုကို remove ပြုလုပ်လိုက်ခြင်းသည်းသည် ထောင်နဲ့ချီရှိသော list မှာ item ဆယ်ခုကို remove ပြုလုပ်ခြင်းထက်ပိုမြန်မည်ဖြစ်သည်။ (နှစ်ခုစလုံးမှာ အလွန်မြန်သဖြင့် ကွာခြားမှုကို မသိနိုင်သော်လည်း) 
 
-`zremrangebyscore` which removes elements from a sorted set with a score between a minimum and a maximum value has a complexity of O(log(N)+M). This makes it a mix. By reading the documentation we see that N is the number of total elements in the set and M is the number of elements to be removed. In other words, the number of elements that'll get removed is probably going to be more significant, in terms of performance, than the total number of elements in the set.
+sorted set တစ်ခု၏ အနည်းဆုံးနှင့် အများဆုံး အကြားရှိ element များကို ဖယ်ရှားပေးသည့် `zremrangebyscore` သည် O(log(N)+M) complexity ရှိသည်။ ထိုကြောင့်အရောဟုဆိုရမည်။ documentation ကိုဖတ်ကြည့်ပါက N သည် set အတွင်းရှိ element အရေအတွက်ဖြစ်ပြီး M သည် remove ပြုလုပ်မည့် element အရေအတွက်ဖြစ်သည်။ တနည်းအားဖြင့် performance အနေဖြင့်ကြည့်ပါက remove ပြုလုပ်မည့် element အရေအတွက်သည်ပို၍ အရေးကြီးသည်ဖြစ်သည်
 
-The `sort` command, which we'll discuss in greater detail in the next chapter has a complexity of O(N+M*log(M)). From its performance characteristic, you can probably tell that this is one of Redis' most complex commands.
+နောက် အခန်းတွင် ထပ်၍ အသေးစိတ်ဆွေးနွေးမည်ဖြစ်သည့် `sort` command သည် O(N+M*log(M)) complexity ရှိသည်။ performance ရှုထောင်က သိနိုင်သည်မှာ ၎င်းသည် redis ၏ အရှုပ်ထွေးဆုံး command များဖြစ်သည်။
 
-There are a number of other complexities, the two remaining common ones are O(N^2) and O(C^N). The larger N is, the worse these perform relative to a smaller N. None of Redis' commands have this type of complexity.
+၎င်းအပြင် အခြားသော complexity များရှိသေးပြီး ကျန်သေးသော နှစ်ခုမှာ O(N^2) နှင့်  O(C^N) တို့ဖြစ်ပြီး N ကြီးလာသည်နှင့်အမျှ N သေသော အခါထက် performanceာသည်။ Redis ၏ မည်သည့် command များမှာ ထိုမှ complexity မရှိပါ။
 
-It's worth pointing out that the Big O notation deals with the worst case. When we say that something takes O(N), we might actually find it right away or it might be the last possible element.
+Big O notation သည် အဆိုးဆုံးအခြေအနေများကိုရှင်ဆိုင်ရန်ဖြစ်ပြီး O(N) ဖြစ်သည်ဆိုပါက ၎င်းသည် ပုံမှန်ဖြစ်လျင်ဖြစ်နိုင်သလို နောက်ဆုံးမှလည်း ဖြစ်လျင်ဖြစ်နိုင်သည်။ 
 
 
-## Pseudo Multi Key Queries
 
-A common situation you'll run into is wanting to query the same value by different keys. For example, you might want to get a user by email (for when they first log in) and also by id (after they've logged in). One horrible solution is to duplicate your user object into two string values:
+## Pseudo Multi Key Query များ
+
+
+ပုံမှန်ကြုံတွေ့ရနိုင်သည့် အခြေအနေတစ်ခုမှ တူညီသော value များကို query ပြုလုပ်ခြင်းဖြစ်သည်။ ဥပမာ user ၏ အမည်ကို email ဖြင့်သိမ်းထားပြီး (ပထဆုံးအကြိမ် login ဝင်သောအခါ) ထိုအပြင် id (login ဝင်ပြီးသောအခါ)
+ဆိုးရွားသော ဆောင်ရွက်မှု ဥပမာ ပုံစံမှာအောက်ပါအတိုင်း နှစ်ခုထပ်တူပွားလိုက်ခြင်းဖြစ်သည်။
 
 	set users:leto@dune.gov '{"id": 9001, "email": "leto@dune.gov", ...}'
 	set users:9001 '{"id": 9001, "email": "leto@dune.gov", ...}'
 
-This is bad because it's a nightmare to manage and it takes twice the amount of memory.
+၎င်း၏ ဆိုးရွားသည်ဆိုသော အကြောင်းအရင်းမှာ memory နှစ်ဆကို manage လုပ်ရသည်မှာ အိမ်မက်ဆိုးဖြစ်သည်။ Redis အနေဖြင့် key တစ်ခုနှင့်တစ်ခုကို ချိတ်ဆက်ပေးလျှင်ကောင်းမည်ဖြစ်သော်လည်း ထို့သိုအလုပ်လုပ်သည် မဟုတ် (နောင်လည်း လုပ်မည် မဟုတ်လောက်ပေ) key များကိုအတွင်းပိုင်းမှ ချိတ်ဆက်ပေးခြင်းသည် (key များနှင့်အများကြီးလုပ်လို့ရသည့်အကြောင်းများ မပြောရသေးသော်လည်း) အတွက် redis မှ အခြားသော solution ဖြင့်ဖြေရှင်းထားပြီး ၎င်းမှာ hash များဖြစ်သည်။
 
-It would be nice if Redis let you link one key to another, but it doesn't (and it probably never will). A major driver in Redis' development is to keep the code and API clean and simple. The internal implementation of linking keys (there's a lot we can do with keys that we haven't talked about yet) isn't worth it when you consider that Redis already provides a solution: hashes.
-
-Using a hash, we can remove the need for duplication:
+hash များကိုအသုံးပြုပြီး duplicate ဖြစ်သည်များကို ဖယ်ရှုားနိုင်သည်။
 
 	set users:9001 '{"id": 9001, "email": "leto@dune.gov", ...}'
 	hset users:lookup:email leto@dune.gov 9001
 
-What we are doing is using the field as a pseudo secondary index and referencing the single user object. To get a user by id, we issue a normal `get`:
+ယခုပြုလုပ်ခြင်းသည် pesudo secondary index ကိုအသုံးပြုပြီး user object တစ်ခုကို reference ပြုလုပ်ခြင်းဖြစ်သည်။ user တစ်ဦးကို id ဖြင့်လိုချင်ပါက `get` ကိုအသုံးပြုနိုင်သည်။
 
 	get users:9001
 
-To get a user by email, we issue an `hget` followed by a `get` (in Ruby):
+user ကို email ဖြင့်လိုချင်ပါက `get` ၏နောက်တွင် `hget` ကိုခေါ်၍ယူရသည်။
 
 	id = redis.hget('users:lookup:email', 'leto@dune.gov')
 	user = redis.get("users:#{id}")
 
-This is something that you'll likely end up doing often. To me, this is where hashes really shine, but it isn't an obvious use-case until you see it.
+၎င်းသည် သင်အများဆုံးကြုံရမည့် ပုံစံဖြစ်သည်။ ၎င်းသည် ကျွန်တော်အမြင်အရ hash များ၏ အသုံးဝင်မှုကို ပေါ်လွင်စေသည့် ကာလဖြစ်ပြီး မမြင်ရသေးခင်အထိ သိသာသော use-case တစ်ခုမဟုတ်သေးပါ။
 
-## References and Indexes
+## Reference နှင့် Index များ
 
-We've seen a couple examples of having one value reference another. We saw it when we looked at our list example, and we saw it in the section above when using hashes to make querying a little easier. What this comes down to is essentially having to manually manage your indexes and references between values. Being honest, I think we can say that's a bit of a downer, especially when you consider having to manage/update/delete these references manually. There is no magic solution to solving this problem in Redis.
+value တစ်ခုမှ အခြားတစ်ခုသော reference ပြုလုပ်သော ဥပမာအတော်များများတွေ့ရပြီးဖြစ်သည်။ ပထမဆုံးအနေဖြင့် list ဥပမာတွင်တွေ့ရပြီးဖြစ်ပြီး ထိုနောက် hash များကိုအသုံးပြု၍ query ပြုလုပ်ရသည်ကို ပိုမိုလွယ်ကူအောင် အသုံးချခဲ့သည်။ index ကို ကိုယ့်ဖာသာ manage ပြုလုပ်ပြီး value များအကြား reference ပြုလုပ်ခြင်းဖြစ်သည်။ အမှန်အတိုင်းပြောရလျင် နည်းနည်းပင်ချာသည် ဟုဆိုရမည် အထူးသဖြင့် manage ၊ update နှင့် delete များပြုလုပ်ပါက ထို reference များကိုပါပြင်ရမည်ဖြစ်သဖြင့် ဖြစ်သည်။ ၎င်းပြဿနာများကိုဖြေရှင်းရန် magic solution မရှိပါ။
 
-We already saw how sets are often used to implement this type of manual index:
+ကျွန်တော်တို့ set များကို ယခုကဲ့သို့သော manual index ကို implement ပြုလုပ်ရန်အသုံးချသည်ကို မြင်တွေ့ပြီးဖြစ်သည်။
 
 	sadd friends:leto ghanima paul chani jessica
 
-Each member of this set is a reference to a Redis string value containing details on the actual user. What if `chani` changes her name, or deletes her account? Maybe it would make sense to also track the inverse relationships:
+set တစ်ခု၏ member တိုင်းသည် user တစ်ဦး detail ကိုဖော်ပြထားသည် string value ၏ reference ဖြစ်သည်။
+အကယ်၍ `chani` သည် နာမည်ပြောင်းလိုက်သည် သို့မဟုတ် account ကို delete လုပ်လိုက်ပါက ဘယ်လိုလုပ်မလဲ။ ထိုကြောင့် relationship ၏ပြောင်းပြန်ကိုပါ trackဖို့လိုအပ်သည်။
 
 	sadd friends_of:chani leto paul
 
-Maintenance cost aside, if you are anything like me, you might cringe at the processing and memory cost of having these extra indexed values. In the next section we'll talk about ways to reduce the performance cost of having to do extra round trips (we briefly talked about it in the first chapter).
 
-If you actually think about it though, relational databases have the same overhead. Indexes take memory, must be scanned or ideally seeked and then the corresponding records must be looked up. The overhead is neatly abstracted away (and they  do a lot of optimizations in terms of the processing to make it very efficient).
+Maintenance လုပ်ရသည်မှာ အလုပ်ပိုသည်အပြင် သင်သည် ကျွန်တော်လိုဖြစ်ပါက index အသစ်ပြုလုပ်၍ process လုပ်ရသည်နှင့် memory ပိုသုံးသဖြင့် စိတ်တိုမိမည်မှာ အမှန်ပါ။ နောက် တစ်ပိုင်းတွင် extra round trips နှင့်ပတ်သတ်၍ performance cost ပိုကောင်းအောင် ဘယ်လိုလုပ်မလဲဆိုသည်ကို ပြောပါမည်။
 
-Again, having to manually deal with references in Redis is unfortunate. But any initial concerns you have about the performance or memory implications of this should be tested. I think you'll find it a non-issue.
+ထိုကဲသို့ တွေးပါက relational database များသည် တူညီသော overhead များရှိသည်။ idnex များသည် memory တွင်ယူပြီး လိုအပ်သော record များအတွင် scan ပြုလုပ်ရသည် ကောက်ယူသည်က အတူတူပင်။ ထို overhead များသည် သေသပ်စွာ ဖယ်ထုတ်ထားသည် ဖြစ်သည် (process ပြုလုပ်ရာတွင် optimization အများအပြားပြုလုပ်ထားသည်)
 
-## Round Trips and Pipelining
+ထိုအပြင် redis တွင် manual အနေဖြင့် reference များကိုကိုင်တွယ်ရသည်က အဆင်မပြေလှ။ သို့သော် အစောပိုင်းအနေဖြင့် memory နှင့် performance များနှင့်ပတ်သတ်၍ သံသယဝင်ပါက စမ်းသပ်ကြည့်သင့်သည်။ ကျွန်တော်အနေဖြင့် သင့် သိပ်မများလှဟု တွေ့မည်ဟုထင်ပါသည်။
 
-We already mentioned that making frequent trips to the server is a common pattern in Redis. Since it is something you'll do often, it's worth taking a closer look at what features we can leverage to get the most out of it.
+## Round Trip များနှင့် Pipeline ပြုလုပ်ခြင်း
 
-First, many commands either accept one or more set of parameters or have a sister-command which takes multiple parameters. We saw `mget` earlier, which takes multiple keys and returns the values:
+Redis တွင် server သို့ အကြိမ်ကြိမ်စေခိုင်းခြင်းသည် ပုံမှန်ဖြစ်သည်ဟု ပြောပြီးဖြစ်သည်။ ထိုသိုကြိမ်ဖန်များစွာပြုလုပ်ရမည်ဖြစ်သည့် မီမိတို့အသုံးချနိုင်မည့် feature များကို အနီးကပ်ကြည့်ရှုကြည့်ကြပါစို့။
+
+ရှေးဦးစွာ command အများစု သည် တစ်ခုနှင့်တစ်ခုထက်ပိုသော parameter များကို လက်ခံနိုင်သည် သို့မဟုတ် အခြားသော လက်အောက်ခံ command မှတဆင့် parameter ပေါင်းများစွာလက်ခံနိုင်သည်။ ခုနမှ `mget` သည် key များစွာကို လက်ခံနိုင်ပြီး value ကို return ပြန်ပေးသည်။
 
 	ids = redis.lrange('newusers', 0, 9)
 	redis.mget(*ids.map {|u| "users:#{u}"})
 
-Or the `sadd` command which adds 1 or more members to a set:
+သို့မဟုတ် `sadd` command သည် တစ်ခုနှင့် တစ်ခုထက်ပိုသော member များကို set အတွင်းသို့ထည့်နိုင်သည်။
 
 	sadd friends:vladimir piter
 	sadd friends:paul jessica leto "leto II" chani
