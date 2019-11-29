@@ -403,11 +403,11 @@ Redis တွင် server သို့ အကြိမ်ကြိမ်စေ�
 	sadd friends:vladimir piter
 	sadd friends:paul jessica leto "leto II" chani
 
-Redis also supports pipelining. Normally when a client sends a request to Redis it waits for the reply before sending the next request. With pipelining you can send a number of requests without waiting for their responses. This reduces the networking overhead and can result in significant performance gains.
+Redis တွင် pipeline ပြုလုပ်ခြင်းကိုလည်း support လုပ်ပါသည်။ ပုံမှန်အားဖြင့် client မှ request ပြုလုပ်သောအခါ နောက် request မလာသေးခင် ၎င်း၏ reply ကိုစောင့်ဆိုင်းသော်လည်း pipeline ပြုလုပ်ပါက ၎င်း၏ response များကိုစောင့်ဆိုင်းစရာမလိုပဲ request များစွာကိုပို့၍ရသည်။ ထိုသို့ဖြင့် network overload များကိုလျော့ချနိုင်ပြီး သိသာသော performance ကောင်းမွန်မှုကို ကြုံရမည်ဖြစ်သည်။
 
-It's worth noting that Redis will use memory to queue up the commands, so it's a good idea to batch them. How large a batch you use will depend on what commands you are using, and more specifically, how large the parameters are. But, if you are issuing commands against ~50 character keys, you can probably batch them in thousands or tens of thousands.
+Redis သည် queue ပြုလုပ်ထားသော command များအတွက် memory ကိုအသုံးပြုမည်ကို မှတ်သားရန်လိုပြီး ၎င်းကို batch ပြုလုပ်ရန်လိုသည်။ မည်မျှအထိ batch ကိုအသုံးပြုမည်ဆိုသည်က မိမိတို့အသုံးပြုမည့် command များအပေါ်မူတည်ပြီး အထူးသဖြင့် parameter မည့်မျှကြီးမည် စသဖြင့်ဖြစ်သည်။ သို့သော် သင့်အနေဖြင့် character ၅၀ ခန့်မျှရှိသော key များဖြစ်ပါက သောင်းနဲ့ချီ batch ပြုလုပ်၍ရသည်။
 
-Exactly how you execute commands within a pipeline will vary from driver to driver. In Ruby you pass a block to the `pipelined` method:
+ထိုသို့ pipeline အတွင်း command များ execute ပြုလုပ်ခြင်းသည် driver တစ်ခုနှင့်တစ်ခုပေါ်မူတည်၍ကွဲပြားမည်ဖြစ်သည်။ Ruby တွင် `pipelined` method ကို အသုံးပြုနိုင်သည်။
 
 	redis.pipelined do
 	  9001.times do
@@ -415,43 +415,46 @@ Exactly how you execute commands within a pipeline will vary from driver to driv
 	  end
 	end
 
-As you can probably guess, pipelining can really speed up a batch import!
+သင့်အနေဖြင့် မှန်းဆထားသည့်အတိုင်း pipeline ပြုလုပ်ခြင်းဖြင့် batch import များကိုပို၍ လျှင်မြန်အောင် ဆောင်ရွက်နိုင်သည်။
 
-## Transactions
+## Transaction များ
 
-Every Redis command is atomic, including the ones that do multiple things. Additionally, Redis has support for transactions when using multiple commands.
 
-You might not know it, but Redis is actually single-threaded, which is how every command is guaranteed to be atomic. While one command is executing, no other command will run. (We'll briefly talk about scaling in a later chapter.) This is particularly useful when you consider that some commands do multiple things. For example:
+Redis command တိုင်းသည် အရာများစွာပြုလုပ်သည့်အရာများပင် atomic ဖြစ်သည်။ ထိုအပြင် redis သည် command များစွာကို အသုံးပြုရာတွင် transaction များကိုအသုံးပြုနိုင်သည်။
 
-`incr` is essentially a `get` followed by a `set`
+သို့သော် redis သည် single thread ဖြင့် အလုပ်လုပ်ပြီး ထို့ကြောင့် command တစ်ခုတိုင်းသည် atomic ဖြစ်သည်ဟု အာမခံထားခြင်းဖြစ်သည်။ command တစ်ခု execute ပြုလုပ်ချိန်တွင် အခြား command များ run မည်မဟုတ်။ (scale ပြုလုပ်သည်နှင့်ပတ်သတ်၍ နောက်ပိုင်းအခန်းများတွင် အကြမ်းဖြင်းပြောသွားမည်ဖြစ်သည်) အချို့ command များသည် အရာများစွာဆောင်ရွက်သည်ကို သိရှိထားပါက ထိုအချက်သည် အလွန်အသုံးဝင်သည်ဟု ဆိုရမည်။ ဥပမာ
 
-`getset` sets a new value and returns the original
 
-`setnx` first checks if the key exists, and only sets the value if it does not
+`incr` သည် `get` ပြုလုပ်ပြီး `set` ပြုလုပ်ခြင်းဖြစ်သည်။
 
-Although these commands are useful, you'll inevitably need to run multiple commands as an atomic group. You do so by first issuing the `multi` command, followed by all the commands you want to execute as part of the transaction, and finally executing `exec` to actually execute the commands or `discard` to throw away, and not execute the commands. What guarantee does Redis make about transactions?
+`getset` သည် value အသစ်တစ်ခုကို set ပြီး မူလတန်ဖိုးကို return ပြုလုပ်ခြင်းဖြစ်သည်။
 
-* The commands will be executed in order
+`setnx` သည် key တစ်ခုရှိသည်မရှိသည်ကို စစ်ဆေးပြီး မရှိပါက value ကို set ပြုလုပ်ခြင်းဖြစ်သည်။
 
-* The commands will be executed as a single atomic operation (without another client's command being executed halfway through)
+၎င်း command များသည် အသုံးဝင်သော်လည်း သင့်အနေဖြင့် command ပေါင်းများစွာကို အုပ်စုလိုက် atomic အနေဖြင့် run ရမည်ဖြစ်သည်။ ထိုကြောင့် `multi` command ကိုအသုံးပြုပြီး execute ပြုလုပ်သော command များကို ထည့်သွင်းခြင်းပြီး  transaction အဖြစ်တည်ဆောက်နိုင်သည်။ ထိုနောက် `exec` command ဖြင့် execute ပြုလုပ်နိုင်သလို `discard` ဖြင့် ပယ်ဖျက်နိုင်သည်။ Redis တွင် transaction အတွက်အာမခံချက်ပေးထားသည်များမှာ
 
-* That either all or none of the commands in the transaction will be executed
 
-You can, and should, test this in the command line interface. Also note that there's no reason why you can't combine pipelining and transactions.
+* command များသည် အစီအစဉ်အတိုင်း execute ပြုလုပ်သွားခြင်း
+
+* command များသည် single atomic operation အနေဖြင့် execute ပြုလုပ်သွားခြင်း (climent command မှာ တဝက်တပျက် execute ပြုလုပ်သွားသည့်တိုင်)
+
+* ၎င်းသည် command များအာလုံးကို execute လုပ်သည့်နှင့် တစ်ခုမှ မပြုလုပ်သည့် အနေအထားသာဖြစ်မည်
+
+သင့်အနေဖြင့် commandline interface တွင် စမ်းသပ်နိုင်ပြီး စမ်းလည်း စမ်းသပ်သင့်သည်။ ထို့အပြင် သင့်အနေဖြင့် pipeline ကိုပါ ပေါင်းစပ်၍ အသုံးပြုနိုင်သည်။
 
 	multi
 	hincrby groups:1percent balance -9000000000
 	hincrby groups:99percent balance 9000000000
 	exec
 
-Finally, Redis lets you specify a key (or keys) to watch and conditionally apply a transaction if the key(s) changed. This is used when you need to get values and execute code based on those values, all in a transaction. With the code above, we wouldn't be able to implement our own `incr` command since they are all executed together once `exec` is called. From code, we can't do:
+နောက်ဆုံးတွင် Redis သည် key တစ်ခု (သို့မဟုတ် တခုထက်ပို၍) ကိုစောင့်ကြည့်နိုင်ပြီး key များပြောင်းလဲသွားပါက transaction ကို apply ပြုလုပ်နိုင်သည်။ ၎င်းသည် transaction များအတွင်း သင့်အနေဖြင့် value ကိုယူပြီး execute ပြုလုပ်ရသော အခြေအနေများတွင် အသုံးပြုသည်။ အပေါ်မှ code ဆိုပါက `exec` ပြီးပါက အတူတကွ execute ပြုလုပ်သွားမည်ဖြစ်၍ ကိုယ့်ဖာသာ `incr` command ကို implement ပြုလုပ်နိုင်မည်မဟုတ်။ 
 
 	redis.multi()
 	current = redis.get('powerlevel')
 	redis.set('powerlevel', current + 1)
 	redis.exec()
 
-That isn't how Redis transactions work. But, if we add a `watch` to `powerlevel`, we can do:
+Redis ၏ transaction များသည် ထိုကဲ့သို့ အလုပ်လုပ်သည်မဟုတ်သော်လည်း `watch` အနေဖြင့် `powerlevel` ကိုadd လိုက်ပါက လုပ်ဆောင်နိုင်သည်။
 
 	redis.watch('powerlevel')
 	current = redis.get('powerlevel')
@@ -459,29 +462,29 @@ That isn't how Redis transactions work. But, if we add a `watch` to `powerlevel`
 	redis.set('powerlevel', current + 1)
 	redis.exec()
 
-If another client changes the value of `powerlevel` after we've called `watch` on it, our transaction will fail. If no client changes the value, the set will work. We can execute this code in a loop until it works.
+သင့်၏ အခြား client မှာ `powerlevel` ၏ တန်ဖိုးကို ပြောင်းလိုက်ပါက `watch` ကိုခေါ်ထားသဖြင့် transaction သည် ဆောင်ရွက်နိုင်မည် မဟုတ်ပေ။ အခြား client မှ မပြောင်းလဲထားပါက ၎င်း set သည်အလုပ်လုပ်မည်ဖြစ်သည်။ ထိုသို့အလုပ်မလုပ်မချင်း code ကို loop အတွင်း execute ပြုလုပ်နိုင်သည်။
 
-## Keys Anti-Pattern
+## Key များ၏ Anti-Pattern
 
-In the next chapter we'll talk about commands that aren't specifically related to data structures. Some of these are administrative or debugging tools. But there's one I'd like to talk about in particular: the `keys` command. This command takes a pattern and finds all the matching keys. This command seems like it's well suited for a number of tasks, but it should never be used in production code. Why? Because it does a linear scan through all the keys looking for matches. Or, put simply, it's slow.
+နောက် အခန်းတွင် data structure များနှင့် မသက်ဆိုင်သော command များကို ပြောသွားမည်ဖြစ်သည်။ အချို့သည် adminstrative ပြုလုပ်ရာတွင်သော်လည်းကောင်း အချို့သည် debuging tool များဖြစ်သည်။ သို့သော် ကျွန်တော်ပြောလိုသော အရာတစ်ခုမှာ `keys` command ဖြစ်သည်။ ထို command သည် pattern တစ်ခုကိုလက်ခံပြီး match ဖြစ်သော key များကို ရှာဖွေပေးသည် ၎င်းသည် command သည်အချိုသော အရာများတွင် သင့်တော်သော်လည်း production တွင်လုံးဝမသုံးသင့်ပေ။ အဘယ်ကြောင့်ဆိုသော် ၎င်းသည် linear အရ key များအားလုံးကို scan ပြုလုပ်သွားသောကြောင့် တနည်းအားဖြင့် နှေးသောကြောင့်ဖြစ်သည်။
 
-How do people try and use it? Say you are building a hosted bug tracking service. Each account will have an `id` and you might decide to store each bug into a string value with a key that looks like `bug:account_id:bug_id`. If you ever need to find all of an account's bugs (to display them, or maybe delete them if they delete their account), you might be tempted (as I was!) to use the `keys` command:
+ဘယ်လိုအသုံးပြုကြလို့လဲ ဟုမေးပါက bug tracking service တစ်ခုတည်ဆောက်သည်ဟု ဆိုပါက account တိုင်းတွင် `id` တစ်ခုရှိမည်ဖြစ်သည်။ `bug:account_id:bug_id` နဲ့ကိုက်ညီသော bug များကို string value store လုပ်ချင်သည်ဟုဆိုပါစို့။ သင့်အနေဖြင့် account တိုင်း၏ bugs များကိုရှာရမည်ဖြစ်၍ (ပြသရန်ဖြစ်စေ ၊ ဖျက်ရန်ဖြစ်စေ) သင့်အနေဖြင့် `keys` command ကိုသုံးချင်မည် ဖြစ်သည်။
 
 	keys bug:1233:*
 
-The better solution is to use a hash. Much like we can use hashes to provide a way to expose secondary indexes, so too can we use them to organize our data:
+ပို၍ကောင်းမွန်သည် solution သည် hash ကိုအသုံးပြုရန်ဖြစ်ပြီး ၎င်းကိုအသုံးပြုခြင်းဖြင့် secondary index များကို expose ပြုလုပ်နိုင်ပြီး data များကို organize ပြုလုပ်နိုင်သည်။
 
 	hset bugs:1233 1 '{"id":1, "account": 1233, "subject": "..."}'
 	hset bugs:1233 2 '{"id":2, "account": 1233, "subject": "..."}'
 
-To get all the bug ids for an account we simply call `hkeys bugs:1233`. To delete a specific bug we can do `hdel bugs:1233 2` and to delete an account we can delete the key via `del bugs:1233`.
+bug ids များကိုလိုချင်ပါက `hkeys bugs:1233` ဟုအလွယ်တကူခေါ်နိုင်သည်။ ဖျက်ချင်ပါက`hdel bugs:1233 2` ဟုခေါ်ယူပြီး key ကို `del bugs:1233` ဟုဖျက်နိုင်သည်။
 
 
-## In This Chapter
+## ယခုအခန်းတွင်
 
-This chapter, combined with the previous one, has hopefully given you some insight on how to use Redis to power real features. There are a number of other patterns you can use to build all types of things, but the real key is to understand the fundamental data structures and to get a sense for how they can be used to achieve things beyond your initial perspective.
+ယခင်အခန်းနှင့်ပေါင်းစပ်ပြီး redis ၏ အဓိက feature များနှင့်ပတ်သတ်၍ မည်သိုအသုံးပြုရမည်နည်းကို ရှင်းပြသွားပါသည်။ အမျိုးစုံတည်ဆောက်ရန် အခြားသော pattern များကိုပေါင်းစပ်အသုံးပြုနိုင်ပြီး အဓိကအချက်မှာ အခြေခံ data structure များနှင့် ၎င်းတို့ကို မည့်သို့အသုံးချမည်နည်းကို နားလည်ရန်လိုသည်။ 
 
-# Chapter 4 - Beyond The Data Structures
+# အခန်း ၄ - data structure များလွန်၍
 
 While the five data structures form the foundation of Redis, there are other commands which aren't data structure specific. We've already seen a handful of these: `info`, `select`, `flushdb`, `multi`, `exec`, `discard`, `watch` and `keys`. This chapter will look at some of the other important ones.
 
