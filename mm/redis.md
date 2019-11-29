@@ -486,18 +486,18 @@ bug ids များကိုလိုချင်ပါက `hkeys bugs:1233` �
 
 # အခန်း ၄ - data structure များလွန်၍
 
-While the five data structures form the foundation of Redis, there are other commands which aren't data structure specific. We've already seen a handful of these: `info`, `select`, `flushdb`, `multi`, `exec`, `discard`, `watch` and `keys`. This chapter will look at some of the other important ones.
+data structure ငါးခုသည် redis ၏ အခြေခံကိုဖော်ဆောင်ပေးချိန်တွင် data structure အခြေပြုမဟုတ်သော အခြားသော command များလည်းရှိသေးသည်။ မြင်ဖူးပြီးသော အရာများဖြစ်သည့် `info` ၊ `select`၊ `flushdb`၊ `multi`၊ `exec`၊ `discard`၊ `watch` နှင့် `keys` တို့ပါဝင်သည်။ ယခုအခန်းတွင် အခြားသောအရေးကြီးသည်များကို ဖော်ပြသွားမည်။
 
 ## Expiration
 
-Redis allows you to mark a key for expiration. You can give it an absolute time in the form of a Unix timestamp (seconds since January 1, 1970) or a time to live in seconds. This is a key-based command, so it doesn't matter what type of data structure the key represents.
+Redis တွင် key တစ်ခုကို expiration သတ်မှတ်နိုင်သည်။ unix timestamp တစ်ခုအနေဖြင့် ( ၁၉၇၀ ခုနှစ် ဇန်နဝါရီလ ၁ ရက်နေ့မှစ၍ ) ဖြစ်စေ ရှိနေမည့် စက္ကန့်အနေဖြင့် ဖြစ်စေ ပေးထားနိုင်သည်။ ၎င်းသည် key အခြေပြု command ဖြစ်သဖြင့် မည့်သည့် data structure မဆိုသုံးနိုင်သည်။
 
 	expire pages:about 30
 	expireat pages:about 1356933600
 
-The first command will delete the key (and associated value) after 30 seconds. The second will do the same at 12:00 a.m. December 31st, 2012.
+ပထမ command တွင် စက္ကန့် ၃၀ ကျော်ပါက key နှင့် ၎င်း၏ value ကို ဖျက်ပစ်မည်ဖြစ်ပြီး ဒုတိယတစ်ခုသည်  12:00 a.m. December 31st, 2012 တွင်ဖျက်ပစ်မည်ဖြစ်သည်။
 
-This makes Redis an ideal caching engine. You can find out how long an item has to live until via the `ttl` command and you can remove the expiration on a key via the `persist` command:
+၎င်း feature သည် redis ကို caching engine တစ်ခုအဖြစ်စွမ်းဆောင်နိုင်သည်။ သင့်အနေဖြင့် item တစ်ခု မည်မျှ အသက်ရှင်ရန် ကျန်သေးသည်ကို `ttl` command ကိုအသုံးပြုပြီး သိနိုင်ပြီး `persist` command ကိုအသုံးပြု၍ expiration ဖြစ်မှုကို ဖယ်ရှားနိုင်သည်။
 
 	ttl pages:about
 	persist pages:about
