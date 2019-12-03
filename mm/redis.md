@@ -502,90 +502,94 @@ Redis တွင် key တစ်ခုကို expiration သတ်မှတ်
 	ttl pages:about
 	persist pages:about
 
-Finally, there's a special string command, `setex` which lets you set a string and specify a time to live in a single atomic command (this is more for convenience than anything else):
+နောက်ဆုံး အနေဖြင့် `setex` ဟုခေါ်သည့် အထူး string command သည် string တစ်ခုကို set ပြုလုပ်ပြီး အချိန်အတိုင်းအတာ တစ်ခုအထိသာ တည်ရှိစေပါမည်။
 
 	setex pages:about 30 '<h1>about us</h1>....'
 
-## Publication and Subscriptions
+## Publication နှင့် Subscription များ
 
-Redis lists have an `blpop` and `brpop` command which returns and removes the first (or last) element from the list or blocks until one is available. These can be used to power a simple queue.
 
-Beyond this, Redis has first-class support for publishing messages and subscribing to channels. You can try this out yourself by opening a second `redis-cli` window. In the first window subscribe to a channel (we'll call it `warnings`):
+Redis list များတွင် တစ်ခုတည်းကျန်သည့်အထိ ပထမဆုံး (သို့မဟုတ်နောက်ဆုံး) element ကို return ပြန်ပြီး remove ပြုလုပ်သော command များမရှိသည်။ ၎င်းကို simple queue အနေဖြင့် အသုံးပြုနိုင်သည်။
+
+ထိုအပြင် Redis တွင် message များကို publish ပြုလုပ်ခြင်းနှင့် channel များကို subscribe ပြုလုပ်ရာတွင် အထောက်အကူအပြုသည်။ သင့်အနေဖြင့် `redis-cli` window ကိုဖွင့်၍စမ်းနိုင်သည်။ ပထမဆုံး channel ကို subscribe ပြုလုပ်ပါ။ (`warning` ဟုအမည်ပေးပါမည်) 
 
 	subscribe warnings
 
-The reply is the information of your subscription. Now, in the other window, publish a message to the `warnings` channel:
+Subscription ဖြစ်သွားပြီဖြစ်ကြောင်းကို reply လုပ်ပါမည်။ ထိုနောက် နောက်ထပ် window တစ်ခုတွင် `warning` channel သို့ message တစ်ခု publish ပြုလုပ်ပါ။ 
 
 	publish warnings "it's over 9000!"
 
-If you go back to your first window you should have received the message to the `warnings` channel.
+ပထမ window သို့ ပြန်သွားပါက `warning` channel အတွင်းတွင် message ရောက်နေသည်ကိုတွေ့ရမည်ဖြစ်သည်.။ 
 
-You can subscribe to multiple channels (`subscribe channel1 channel2 ...`), subscribe to a pattern of channels (`psubscribe warnings:*`) and use the `unsubscribe` and `punsubscribe` commands to stop listening to one or more channels, or a channel pattern.
+သင့်အနေဖြင့် channel ပေါင်းများစွာ (`subscribe channel1 channel2 ...`) ကို subscribe ပြုလုပ်နိုင်ပြီး Pattern အနေဖြင့်လည်း (`psubscribe warnings:*`) အသုံးပြုနိုင်သည့်အပြင် `unsubscribe` နှင့် `punsubscribe` 
+ကိုအသုံးပြု၍ တစ်ခုနှင့် တစ်ခုထက်ပိုသော channel များကို unsub ပြုလုပ်နိုင်သည်။
 
-Finally, notice that the `publish` command returned the value 1. This indicates the number of clients that received the message.
+ထိုနောက် `publish` command သည် value 1 ကိုပြန်မည်ကို သတိထားမိမည်ဖြစ်ပြီး ၎င်းသည် လက်ခံရရှိသော client အရေအတွက်ကို ညွန်းဆိုခြင်းဖြစ်သည်။
 
 
-## Monitor and Slow Log
+## Monitor နှင့် Slow Log
 
-The `monitor` command lets you see what Redis is up to. It's a great debugging tool that gives you insight into how your application is interacting with Redis. In one of your two redis-cli windows (if one is still subscribed, you can either use the `unsubscribe` command or close the window down and re-open a new one) enter the `monitor` command. In the other, execute any other type of command (like `get` or `set`). You should see those commands, along with their parameters, in the first window.
+`monitor` command သည် Redis ဘာဖြစ်နေသည်ကို ပြသော command ဖြစ်သည်။ သင့် application နှင့် Redis ချိတ်ဆက် အလုပ်လုပ်လုပ်နေသည့် insight ကိုပြသပေးသော debugging tool တစ်ခုဖြစ်သည်။ ခုနက redis-cli window နှစ်ခုအနက် တစ်ခုတွင် (တစ်ခုက sub ပြုလုပ်ထားပါက `unsubscribe` command ပြုလုပ်၍ဖြစ်စေ ထွက်ပြီး window အသစ်မှ ပြန်ဝင်၍ဖြစ်စေ) `monitor` command ကိုရိုက်လိုက်ပါ။ နောက်တစ်ခုတွင် အခြား command များ (ဥပမာ `get` သို့မဟုတ် `set`) ဆောင်ရွက်ကြည့်ပါ။ Parameter ကအစ ၎င်း command များကိုပါ ပထမ window တွင်တွေ့ရမည်ဖြစ်သည်။
 
-You should be wary of running monitor in production, it really is a debugging and development tool. Aside from that, there isn't much more to say about it. It's just a really useful tool.
+production တွင် monitor မ run မိစေရန် သတိပြုရမည်ဖြစ်သည်။ ၎င်းသည် debug နှင့် development ပြုရာတွင် အထောက်အကူပြုသော်လည်း ထိုမှအပ အခြား ပြောရန်သိပ်မရှိပေ။ အလွန်အသုံးဝင်သော tool ဖြစ်သည်။
 
-Along with `monitor`, Redis has a `slowlog` which acts as a great profiling tool. It logs any command which takes longer than a specified number of **micro**seconds. In the next section we'll briefly cover how to configure Redis, for now you can configure Redis to log all commands by entering:
+`monitor` နှင့်အတူ Redis တွင် `slowlog` ဟုခေါ်သည် profiling tool တစ်ခုရှိသည်။ ၎င်းသည် **micro**second အတိုင်းအတာ တစ်ခုထိ ကြာသော မည့်သည့် command မဆို log ပြုလုပ်ပေးသည်။ နောက်တစ်ဖြတ်တွင် Redis တွင်မည်သို့ configure ပြုလုပ်သင့်သည်ကို ရှင်းပြသွားမည် ဖြစ်ပြီး ယခုတွင်မူ command အားလုံးကို log လိုပါက အောက်ပါအတိုင်း configure ပြုလုပ်နိုင်သည်။
 
 	config set slowlog-log-slower-than 0
 
-Next, issue a few commands. Finally you can retrieve all of the logs, or the most recent logs via:
+ထိုနောက် အောက်ပါ command များကို ထပ်ထည့်ပါ။ နောက်ဆုံးတွင် log များအားလုံး သို့မဟုတ် နောက်ဆုံး logs များကို retrieve လုပ်လိုပါက
 
 	slowlog get
 	slowlog get 10
 
-You can also get the number of items in the slow log by entering `slowlog len`
 
-For each command you entered you should see four parameters:
+slow log တွင်ရှိသော item အရေအတွက်ကို `slowlog len` ရိုက်ရင်းသိနိုင်သည်။
 
-* An auto-incrementing id
+Command တိုင်းအတွက် သင့်အနေဖြင့် parameter လေးမျိုးကိုတွေ့ရမည်ဖြစ်ပြီး :
 
-* A Unix timestamp for when the command happened
+* auto-increment ဖြစ်သော id
 
-* The time, in microseconds, it took to run the command
+* Command ဖြစ်ပေါ်သောအချိန်၏ Unix timestamp
 
-* The command and its parameters
+* ထို command ကို run ရန်ကြာချိန် (microsecond ဖြင့်)
+
+* ထို command နှင့် ၎င်း၏ parameter
 
 The slow log is maintained in memory, so running it in production, even with a low threshold, shouldn't be a problem. By default it will track the last 1024 logs.
 
 ## Sort
 
-One of Redis' most powerful commands is `sort`. It lets you sort the values within a list, set or sorted set (sorted sets are ordered by score, not the members within the set). In its simplest form, it allows us to do:
+Redis ၏ powerful အဖြစ်ဆုံး command တစ်ခုမှာ `sort` ဖြစ်သည်။ ၎င်းသည် list ၊ set သို့မဟုတ် sorted set (sorted set များသည် score အရ order ပြုလုပ်ထားခြင်းဖြစ်ပြီး member အလိုက် မဟုတ်ပါ) အတွင်းရှိ value များကို sort ပြုလုပ်နိုင်သည်။ အရိုးရှင်းဆုံးပုံစံအနေဖြင့် အောက်ပါအတိုင်း ဆောင်ရွက်နိုင်သည်။
 
 	rpush users:leto:guesses 5 9 10 2 4 10 19 2
 	sort users:leto:guesses
 
-Which will return the values sorted from lowest to highest. Here's a more advanced example:
+၎င်း value များကို အနည်းဆုံးမှ အများဆုံးသို့ sort သွားမည်ဖြစ်သည်။ အောက်တွင် နောက်ဥပမာ တစ်ခုကိုကြည့်နိုင်ပါသည်။ 
 
 	sadd friends:ghanima leto paul chani jessica alia duncan
 	sort friends:ghanima limit 0 3 desc alpha
 
-The above command shows us how to page the sorted records (via `limit`), how to return the results in descending order (via `desc`) and how to sort lexicographically instead of numerically (via `alpha`).
+အပေါ်က command သည် sort ပြုလုပ်ထားသော records များကို limit မှ တဆင့် paging ပြုလုပ်ပုံကို ပြထားခြင်းဖြစ်သည်။ `desc` ကိုအသုံးပြု၍ descending order အတိုင်းစီနိုင်ပြီး နံပါတ်စဉ်တိုင်းမဟုတ်ပဲ စာသားအရစီလိုချင် `alpha` ကိုအသုံးပြုနိုင်သည်။ 
 
-The real power of `sort` is its ability to sort based on a referenced object. Earlier we showed how lists, sets and sorted sets are often used to reference other Redis objects. The `sort` command can dereference those relations and sort by the underlying value. For example, say we have a bug tracker which lets users watch issues. We might use a set to track the issues being watched:
+`sort` ၏ တကယ့် power မှာ referenced object ကိုအခြေပြု၍ sort နိုင်ခြင်းဖြစ်သည်။ အစောပိုင်းတွင် list၊ set နှင့် sorted set များသည် အခြား Redis Object များကို reference ပြုလုပ်ရန် အသုံးပြုကြကြောင်းပြောပြီးပြီ ဖြစ်သည်။ `sort` command သည် ၎င်း relation များကို dereference ပြုလုပ်ပြီး ၎င်း value များဖြင့် sort ပြုလုပ်နိုင်သည်။  ဥပမာ issue များကို user များက watch ပြုလုပ်သည့် bug tracker စနစ်တစ်ခုရှိသည်ဆိုပါစို့ watch ပြုလုပ်သော issue များကို track လုပ်နိုင်ရန် အောက်ပါအတိုင်း set ရပါမည်။
 
 	sadd watch:leto 12339 1382 338 9338
 
-It might make perfect sense to sort these by id (which the default sort will do), but we'd also like to have these sorted by severity. To do so, we tell Redis what pattern to sort by. First, let's add some more data so we can actually see a meaningful result:
+၎င်းကို id ဖြင့် sort ပြုလုပ်ခြင်း ( default အနေဖြင့်ပြုလုပ်မည်ဖြစ်ပြီး) ပုံမှန်ဖြစ်သော်လည်း ကျွန်တော်တို့အနေဖြင့် severity ဖြင့်စီလိုသည်။ ထို့သို့ပြုလုပ်ရန် Redis ကိုမည်သည့် pattern ဖြင့် sort မည်ကိုပြောရန်လိုသည်။ ရှေးဦးစွာ ပို၍အဓိပ္ပါယ်ရှိစေရန် data များထည့်ကြပါစို့။ 
 
 	set severity:12339 3
 	set severity:1382 2
 	set severity:338 5
 	set severity:9338 4
 
-To sort the bugs by severity, from highest to lowest, you'd do:
+အမြင့်ဆုံးမှ အနိမ့်ဆုံးသို့ bug များကို severity ဖြင့်စီရန် အောက်ပါအတိုင်း
 
 	sort watch:leto by severity:* desc
 
-Redis will substitute the `*` in our pattern (identified via `by`) with the values in our list/set/sorted set. This will create the key name that Redis will query for the actual values to sort by.
+Redis တွင် list များ၊ set များနှင့် sorted set များအတွင်းရှိ value များကို `*` pattern အတိုင်း အစားထိုးမည်ဖြစ်သည်။ (`by` ဖြင့် identify ပြုလုပ်ရပြီး) ၎င်းသည် Redis ၏ အစစ်အမှန် value ကို sortပြီး key များကို ထုတ်ပေးမည်ဖြစ်သည်။
 
-Although you can have millions of keys within Redis, I think the above can get a little messy. Thankfully `sort` can also work on hashes and their fields. Instead of having a bunch of top-level keys you can leverage hashes:
+
+Redis ထဲတွင် key များသန်းနဲ့ချီရှိနိုင်သော်လည်း ရှုပ်နေမည်ဖြစ်သည်။ ထိုကြောင့် `sort` ကိုအသုံးပြုနိုင်ပြီး ၎င်းသည် hash များနှင့် ၎င်း၏ field များတွင်လည်း အလုပ်လုပ်သည်။ top level key အများကြီးထားမည့်အစား hash များကို အောက်ပါအတိုင်း ဆောင်ရွက်နိုင်သည်။
 
 	hset bug:12339 severity 3
 	hset bug:12339 priority 1
