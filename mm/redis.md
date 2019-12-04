@@ -660,21 +660,25 @@ Paging များကို implement ပြုလုပ်ရာတွင် `
 
 # အခန်း (၆) - Lua Script ရေးခြင်း
 
-Redis 2.6 includes a built-in Lua interpreter which developers can leverage to write more advanced queries to be executed within Redis. It wouldn't be wrong of you to think of this capability much like you might view stored procedures available in most relational databases.
 
-The most difficult aspect of mastering this feature is learning Lua. Thankfully, Lua is similar to most general purpose languages, is well documented, has an active community and is useful to know beyond Redis scripting. This chapter won't cover Lua in any detail; but the few examples we look at should hopefully serve as a simple introduction.
+Redis 2.6 တွင် Lua interpreter ပါဝင်ပြီး ၎င်းကို အသုံးပြု၍ Redis အတွင်းတွင် ပို၍အဆင့်မြင် query များကို execute ပြုလုပ်နိုင်သည်။ relational database များတွင် ပါဝင်သော stored procedure များနှင့် ဆင်တူသည်ဟု မှတ်ယူနိုင်သည်။
+
+၎င်း feature ကိုကျွမ်းကျင်စွာအသုံးပြုနိုင်ရန် အခက်အခဲမှာ Lua ကိုသင်ယူရခြင်းဖြစ်သည်။ သို့သော် Lua သည် အခြားသော general purpose language များနှင့်ဆင်တူပြီး documentation ကောင်းကောင်းလည်းရှိသည့်အပြင် ၎င်း community သည်လည်း active ဖြစ်ကာ Redis တွင် script ပြုလုပ်ခြင်းသာမက အခြားနေရာများတွင်လည်း အသုံးဝင်သည်။
+ယခုအခန်းတွင် Lua အကြောင်းအသေးစိတ်ပြောမည်မဟုတ်ပဲ အစပျိုးမိတ်ဆက်ရန် ဥပမာအနည်းငယ်များကိုသာ ထိတွေ့သွားပါမည်။
 
 ## Why?
 
-Before looking at how to use Lua scripting, you might be wondering why you'd want to use it. Many developers dislike traditional stored procedures, is this any different? The short answer is no. Improperly used, Redis' Lua scripting can result in harder to test code, business logic tightly coupled with data access or even duplicated logic.
 
-Properly used however, it's a feature that can simplify code and improve performance. Both of these benefits are largely achieved by grouping multiple commands, along with some simple logic, into a custom-build cohesive function. Code is made simpler because each invocation of a Lua script is run without interruption and thus provides a clean way to create your own atomic commands (essentially eliminating the need to use the cumbersome `watch` command). It can improve performance by removing the need to return intermediary results - the final output can be calculated within the script.
+Lua Scripting ကိုအသုံးမပြုမီ အဘယ်ကြောင့် သုံးသင့်သည်ကို စဉ်းစားကောင်းစဉ်းစားပါလိမ့်မည်။ developer အတော်များများသည် ထုံးတမ်းစဉ်လာ stored procedure များကို သဘောမကျသဖြင့် ယခုဟာသည်လည်း ဘာကွာသနည်းဟု မေးစရာပေါ်လာသည်။ တိုတိုဖြေရပါက "ဟင့်အင်း" ဟုဖြေရန်ရှိသည်။ ကောင်းကောင်းမွန်မွန် အသုံးမချတက်ပါက Redis ၏ lua scripting သည် Code test ပြုလုပ်ရသည်မှာ ခက်ခဲသည့်အပြင် business logic နှင့် data access မှာ tightly couple ဖြစ်ရုံသာမက logic duplication ပါဖြစ်နိုင်သည်။
 
-The examples in the following sections will better illustrate these points.
+သို့သော် မှန်ကန်စွာ အသုံးချပါက ရိုးရိုးရှင်းရှင်း ရေးနိုင်ပြီး performance ကို ပိုမိုကောင်းမွန်စေသည်။ ၎င်း အကျိုးအမြတ်များသည် command များစွာကို group ပြုလုပ်ရာပြီး function အဖြစ်အသုံးပြုရာတွင် သိသာလှသည်။ 
+Code မှာ ရိုးရှင်းသဖြင့် Lua script ၏ invocation တိုင်းသည် အတားအဆီးမရှိပဲ atomic command တိုင်းကို သေသေသပ်သပ် ဖန်တီးနိုင်သည်။ (`watch` command လိုအပ်ခြင်းကို ချေဖျက်နိုင်ခြင်းဖြင့်) ချက်ချင်း result ကို return မပြန်ပဲ နောက်ဆုံး calculated လုပ်ထားသည်ကိုသာ return ပြန်ခြင်းဖြင့် performance ပိုမိုကောင်းမွန်စေနိုင်သည်။
+
+အောက်က ဥပမာများသည် ၎င်းအချက်များကို သိသာစေနိုင် တည်ဆောက်ထားခြင်းဖြစ်သည်။
 
 ## Eval
 
-The `eval` command takes a Lua script (as a string), the keys we'll be operating against, and an optional set of arbitrary arguments. Let's look at a simple example (executed from Ruby, since running multi-line Redis commands from its command-line tool isn't fun):
+`eval` command သည် Lua script ကို string အနေဖြင့် လက်ခံပြီး မိမိတို့ operating လုပ်မည့် key များနှင့် pass ပြုလုပ်မည့် argument များကို optional အနေဖြင့် ပါဝင်သည်။ Ruby မှ execute ပြုလုပ်လိုက်သော အောက်က ဥပမာကိုကြည့်ပါ။
 
     script = <<-eos
       local friend_names = redis.call('smembers', KEYS[1])
@@ -690,9 +694,9 @@ The `eval` command takes a Lua script (as a string), the keys we'll be operating
     eos
     Redis.new.eval(script, ['friends:leto'], ['m'])
 
-The above code gets the details for all of Leto's male friends. Notice that to call Redis commands within our script we use the `redis.call("command", ARG1, ARG2, ...)` method.
+အပေါ်မှ code သည် Leto ၏ ယောင်္ကျားလေး သူငယ်ချင်းအားလုံး၏ detail အားလုံးကို ရရှိနိုင်သည်။ Script အတွင်းရှိ Redis Command များကို `redis.call("command", ARG1, ARG2, ...)` ဟုသော method ကိုအသုံးပြုသည်ကို သတိထားမိမည်ဖြစ်သည်။
 
-If you are new to Lua, you should go over each line carefully. It might be useful to know that `{}` creates an empty `table` (which can act as either an array or a dictionary), `#TABLE` gets the number of elements in the TABLE, and `..` is used to concatenate strings.
+Lua နှင့်မရင်းနှီးပါက တစ်လိုင်းချင်းစီ ဖတ်ကြည့်သင့်သည်။ `{}` သည် empty `table` တစ်ခု ဖန်တီးပေးပြီး (array သို့မဟုတ် dictionary ကဲ့သို့ အလုပ်လုပ်သည်) `#TABLE` ဖြင့် TABLE အတွင်းရှိ element များကို ရယူပြီး `..` ဖြင့် string များကို concat လုပ်ရာတွင် အသုံးပြသည်။
 
 `eval` actually take 4 parameters. The second parameter should actually be the number of keys; however the Ruby driver automatically creates this for us. Why is this needed? Consider how the above looks like when executed from the CLI:
 
