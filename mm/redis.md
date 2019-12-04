@@ -607,31 +607,33 @@ Redis ထဲတွင် key များသန်းနဲ့ချီရှိ
 	hset bug:9338 priority 2
 	hset bug:9338 details '{"id": 9338, ....}'
 
-Not only is everything better organized, and we can sort by `severity` or `priority`, but we can also tell `sort` what field to retrieve:
+အားလုံးမှာ ပို၍ organize ဖြစ်သလို `severity` သို့မဟုတ် `priority` ဖြင့်လည်း စီနိုင်သည့် အပြင် မည်သည် field ဖြင့် `sort` ပြုလုပ်သည်ကိုပါ ပြောနိုင်သည်။
 
 	sort watch:leto by bug:*->priority get bug:*->details
 
-The same value substitution occurs, but Redis also recognizes the `->` sequence and uses it to look into the specified field of our hash. We've also included the `get` parameter, which also does the substitution and field lookup, to retrieve bug details.
+value substution ပေါ်လာပါသော်လည်း redis အနေဖြင့် `->` ကိုနားလည်သည်ဖြစ်၍ ၎င်းနှင့် ဆက်စပ်နေသော field ကို hash ထဲမှ သွားရှာပါ့မည်။ substitute နှင့်  lookupပြုလုပ်ရန် field ကို `get` parameter မှထည့်သွင်းလိုက်ပြီး ၎င်းမှ bug detail ကိုရမည်ဖြစ်သည်။
 
-Over large sets, `sort` can be slow. The good news is that the output of a `sort` can be stored:
+ပမာဏများသော set များတွင်မူ `sort` သည်နှေးနိုင်သည်။ သတင်းကောင်းတစ်ခုမှ `sort` ၏ ရလဒ်ကို store လုပ်နိုင်ခြင်းဖြစ်သည်။
 
 	sort watch:leto by bug:*->priority get bug:*->details store watch_by_priority:leto
 
-Combining the `store` capabilities of `sort` with the expiration commands we've already seen makes for a nice combo.
+
+`store` ပြုလုပ်နိုင်ခြင်းနှင့် ရှေ့မှ တွေ့ထားခဲ့သော expiration command နှစ်ခုကို ပေါင်းစပ်အသုံးပြုနိုင်သည်။
 
 ## Scan
 
-In the previous chapter, we saw how the `keys` command, while useful, shouldn't be used in production. Redis 2.8 introduces the `scan` command which is production-safe. Although `scan` fulfills a similar purpose to `keys` there are a number of important difference. To be honest, most of the *differences* will seem like *idiosyncrasies*, but this is the cost of having a usable command.
 
-First amongst these differences is that a single call to `scan` doesn't necessarily return all matching results. Nothing strange about paged results; however, `scan` returns a variable number of results which cannot be precisely controlled. You can provide a `count` hint, which defaults to 10, but it's entirely possible to get more or less than the specified `count`.
+ယခင်အပိုင်းများတွင် အသုံးဝင်သော်လည်း production တွင် မသုံးသင့်သော `keys` အလုပ်လုပ်ပုံကိုသိပြီးဖြစ်သည်။ Redis 2.8 တွင် production-safe ဖြစ်သည့် `scan` ကိုမိတ်ဆက်ပေးခဲ့သည်။ `scan` သည် `keys` ၏ပုံစံအတိုင်း သုံးရန်ရည်ရွယ်ထားသော်လည်း သိသာထင်ရှားသည် ကွဲပြားခြားနားချက် များရှိသည်။ ထိုကွဲပြားချက်များမှာ မသိသာဟုထင်ရသော်လည်း ၎င်းသည် အဓိကကြသော အချက်ဖြစ်သည်။ 
 
-Rather than implementing paging through a `limit` and `offset`, `scan` uses a `cursor`. The first time you call `scan` you supply `0` as the cursor. Below we see an initial call to `scan` with an pattern match (optional) and a count hint (optional):
+ရှေးဦးစွာ `scan` ဟု တစ်ခုတည်းခေါ်ရုံဖြင့် match ဖြစ်သော result အကုန်လုံးကို ထုတ်ပေးမည် မဟုတ်ပေ။ paged ပြုလုပ်ထားသော result များမှာ ထူးဆန်းလှသည်မဟုတ်သော်လည်း `scan` အနေဖြင့် အသေအချာ control လုပ်၍မရသည့် အစီအစဉ်ဖြင့် result များကို ထုတ်ပေးသည်။ `count` hint အနေဖြင့် default အနေဖြင့် 10 ဖြစ်မည်ဖြစ်သော်လည်း အနည်းအများကို ချိန်နိုင်သည်။
+
+Paging များကို implement ပြုလုပ်ရာတွင် `limit` နှင့် `offset` များအစား `cursor` ကိုအသုံးပြုသည်။ ပထဆုံး `scan` ကိုခေါ်ပါက cursor မှာ `0` ဖြစ်သည်။ အောက်တွင် pattern match (optional) နှင့် count (optional) ကို အသုံးပြု၍ implement လုပ်ပြထားသည်။
 
     scan 0 match bugs:* count 20
 
-As part of its reply, `scan` returns the next cursor to use. Alternatively, scan returns `0` to signify the end of results. Note that the next cursor value doesn't correspond to the result number or anything else which clients might consider useful.
+၎င်း reply ၏ တစိတ်တစ်ပိုင်းအနေဖြင့် `scan` သည် နောက်ထပ်အသုံးပြုနိုင်သည့် cursor တစ်ခုထည့်ပေးထားသည်။ သိရမည်မှာ နောက်ထပ် cursor value မှာ random ဖြစ်သည်။
 
-A typical flow might look like this:
+ပုံမှန်  လုပ်ဆောင်ပုံမှာ အောက်ပါအတိုင်းဖြစ်သည်:
 
     scan 0 match bugs:* count 2
     > 1) "3"
@@ -641,19 +643,22 @@ A typical flow might look like this:
     > 2) 1) "bugs:124"
     >    2) "bugs:123"
 
-Our first call returned a next cursor (3) and one result. Our subsequent call, using the next cursor, returned the end cursor (0) and the final two results. The above is a *typical* flow. Since the `count` is merely a hint, it's possible for `scan` to return a next `cursor` (not 0) with no actual results. In other words, an empty result set doesn't signify that no additional results exist. Only a 0 cursor means that there are no additional results.
 
-On the positive side, `scan` is completely stateless from Redis' point of view. So there's no need to close a cursor and there's no harm in not fully reading a result. If you want to, you can stop iterating through results, even if Redis returned a valid next cursor.
+ပထမဆုံး call သည် နောက်ထပ် cursor တစ်ခုဖြစ်သည့် (3) နှင့် result တစ်ခု return ပြန်ပေးမည်ဖြစ်သည်။ နောက်ထပ် call တွင် ပထမ cursor ကိုအသုံးပြုထားပြီး end cursor ဖြစ်သည့် (0) နှင့် နောက်ဆုံး result နှစ်ခုကို ထုတ်ပေးထားသည်။ အပေါ်မှ ပုံစံသည် ပုံမှန်လုပ်ဆောင်ပုံဖြစ်သည်။ `count` မှာ hint သက်သက်သာဖြစ်၍ `scan` တွင် 0 မဟုတ်သော `cursor` နှင့် တကယ့် result များမဟုတ်သည်ကို return ၍ရသည်။ တနည်းအားဖြင့် empty result အနေဖြင့် result အသစ်ရှိမရှိကို မသိနိုင်ပါ။ 0 cursor ကသာ နောက်ထပ် result မရှိသည်ကို သိရှိနိုင်သည်။
 
-There are two other things to keep in mind. First, `scan` can return the same key multiple times. It's up to you to deal with this (likely by keeping a set of already seen values). Secondly, `scan` only guarantees that values which were present during the entire duration of iteration will be returned. If values get added or removed while you're iterating, they may or may not be returned. Again, this comes from `scan`'s statelessness; it doesn't take a snapshot of the existing values (like you'd see with many databases which provide strong consistency guarantees), but rather iterates over the same memory space which may or may not get modified.
+`scan` သည် redis ဘက်မှကြည့်လျင် stateless ဖြစ်နေသော်ကြောင့် cursor ကို close ပြုလုပ်ရန်မလိုသလို အစအဆုံး မ read ပဲပြတ်ကျသွားလျင်လည်း ပြဿနာမဟုတ်ပေ။ valid ဖြစ်ပြီး နောက်ထပ် cursor ကို return ပြန်နေသည့်တိုင်အောင် iterate ပြုလုပ်သည်ကို ရပ်တန့်နိုင်သည်။
 
-In addition to `scan`, `hscan`, `sscan` and `zscan` commands were also added. These let you iterate through hashes, sets and sorted sets. Why are these needed? Well, just like `keys` blocks all other callers, so does the hash command `hgetall` and the set command `smembers`. If you want to iterate over a very large hash or set, you might consider making use of these commands. `zscan` might seem less useful since paging through a sorted set via `zrangebyscore` or `zrangebyrank` is already possible. However, if you want to fully iterate through a large sorted set, `zscan` isn't without value.
+သို့သော် အချက်နှစ်ချက်ကို သတိထားရန်လိုပြီး ပထမဆုံး `scan` သည် တူညီသော key ကို ကြိမ်ဖန်များစွာ return ပြန်နိုင်ပြီး သင့်အနေဖြင့် ၎င်းကို ဘယ်လိုဖြေရှင်းမည်ဆိုသည်က (ရှိပြီးသား value များကို set တစ်ခုတည်းထည့်ထားခြင်းဖြစ်စေ) တစ်ခုဖြစ်ပြီး ဒုတိယအနေဖြင့် `scan` သည် iteration ကာလအတွင်းသာ value များကိုသာ အာမခံနိုင်သည်။ အကယ်၍ သင့်အနေဖြင့် iterate ပြုလုပ်နေချိန် value များကို ထပ်ထည့်ခြင်း ဖျက်ပစ်ခြင်း ပြုလုပ်ပါက ထို value များသည် return ပြန်မည် မပြန်မည်က မသေချာပေ။ ထိုအပြင် ၎င်းသည် `scan` သည် state အနေဖြင့်မရှိသည်ဖြစ်၍ ရှိနေသည့် value ကို snapshot အဖြစ်မသိမ်းထားမည့်အစား (database တော်တော်များများ consistency နှင့်ပတ်သတ်ပါက အခိုင်အမာ အာမခံကြသော်လည်း)  memory space အတွင်းသာ iterate ပြုလုပ်ထားခြင်းကြောင့် modified ပြုလုပ်ခြင်းခံရမည် ရှိမရှိက မသေချာပေ။
 
-## In This Chapter
 
-This chapter focused on non-data structure-specific commands. Like everything else, their use is situational. It isn't uncommon to build an app or feature that won't make use of expiration, publication/subscription and/or sorting. But it's good to know that they are there. Also, we only touched on some of the commands. There are more, and once you've digested the material in this book it's worth going through the [full list](http://redis.io/commands).
+`scan` အပြင် `hscan`၊ `sscan` နှင့် `zscan` တို့လည်းရှိသေးပြီး ၎င်းတို့ဖြင့်  hash ၊ set နှင့် sorted set များအတွင်း iterate ပြုလုပ်နိုင်မည်။ `keys` သည်အခြား caller များကို block ပြုလုပ်သကဲ့သို့ hash command `hgetall` နှင့် set command `smember` တို့သည်လည်း အတူတူပင်ဖြစ်သည်။ သင့်အနေဖြင့် ပမာဏများသည့် hash သို့မဟုတ် set မှ iterate ပြုလုပ်ပါက ထို command များကိုအသုံးပြုရန်စဉ်းစားသင့်သည်။ `zrangebyscore` နှင့် `zrangebyrank` တို့သည် နဂိုကတည်းကပါရှိသဖြင့် `zscan` သည် သိပ်အသုံးဝင်သည့်ပုံမရသော်လည်း သင့်အနေဖြင့် sorted set အကြီးမှ အစအဆုံး iterate ပြုလုပ်လိုပါက `zscan` ကိုအသုံးပြုနိုင်သည်။
 
-# Chapter 5 - Lua Scripting
+## ယခုအခန်းတွင်
+
+ယခုအခန်းတွင် data structure နှင့်မသက်ဆိုင်သော command များကို အာရုံစိုက်ထားသည်။ အရာအားလုံးကဲသို့ပင် ၎င်း၏ အသုံးမှာ အခြေအနေအရဖြစ်သည်။ ထိုကြောင့် expiration ၊ publication၊ subscription နှင့် sorting ကို ကိုအသုံးမပြုသော app သို့မဟုတ် feature မျိုးသည် ဆန်းသည် မဟုတ်ပေ။ သို့သော် ၎င်းတို့ရှိသည်ကို သိထားရန်သလိုသည်။ ထိုအပြင် command ထဲမှာ အချို့ကိုသာ ရှင်းသွားသည်ဖြစ်ပြီး မပြောပဲချန်လှန်ထားသော ommand များလည်းရှိသေးပြီး ၎င်းတို့ကို [ယခုလင့်ကို](http://redis.io/commands) နှိပ်၍ကြည့်နိုင်သည်။
+
+
+# အခန်း (၆) - Lua Script ရေးခြင်း
 
 Redis 2.6 includes a built-in Lua interpreter which developers can leverage to write more advanced queries to be executed within Redis. It wouldn't be wrong of you to think of this capability much like you might view stored procedures available in most relational databases.
 
