@@ -698,40 +698,40 @@ Code မှာ ရိုးရှင်းသဖြင့် Lua script ၏ invo
 
 Lua နှင့်မရင်းနှီးပါက တစ်လိုင်းချင်းစီ ဖတ်ကြည့်သင့်သည်။ `{}` သည် empty `table` တစ်ခု ဖန်တီးပေးပြီး (array သို့မဟုတ် dictionary ကဲ့သို့ အလုပ်လုပ်သည်) `#TABLE` ဖြင့် TABLE အတွင်းရှိ element များကို ရယူပြီး `..` ဖြင့် string များကို concat လုပ်ရာတွင် အသုံးပြသည်။
 
-`eval` actually take 4 parameters. The second parameter should actually be the number of keys; however the Ruby driver automatically creates this for us. Why is this needed? Consider how the above looks like when executed from the CLI:
+`eval` သည် တတယ်တော့ parameter ၄ ခုလက်ခံပါသည်။ ဒုတိယ parameter သည် key အရေအတွက်ဖြစ်သင့်သော်လည်း Ruby driver မိမိတို့အတွက် အလိုအလျောက် create ပေးသည်။ အဘယ်ကြောင့်လုပ်ပေးသနည်း။ အောက်ကအတိုင်း CLI မှ execute ပြုလုပ်သည်ဟု ယူဆပါ။
 
     eval "....." "friends:leto" "m"
     vs
     eval "....." 1 "friends:leto" "m"
 
-In the first (incorrect) case, how does Redis know which of the parameters are keys and which are simply arbitrary arguments? In the second case, there is no ambiguity.
+ပထမတစ်ကြောင်း (အမှား) တွင် Redis အနေဖြင့် မည်သည်က key မည်သည်က value ဆိုသည်ကို သိနိုင်မည်နည်း။ ဒုတိယတစ်ကြောင်းတွင်မူ ထိုသို့ ပြဿနာများမရှိပါ။
 
-This brings up a second question: why must keys be explicitly listed? Every command in Redis knows, at execution time, which keys are going to needed. This will allow future tools, like Redis Cluster, to  distribute requests amongst multiple Redis servers. You might have spotted that our above example actually reads from keys dynamically (without having them passed to `eval`). An `hget` is issued on all of Leto's male friends. That's because the need to list keys ahead of time is more of a suggestion than a hard rule. The above code will run fine in a single-instance setup, or even with replication, but won't in the yet-released Redis Cluster.
+ထိုကြောင့် မေးစရာနောက်တစ်ခုပေါ်လာသည်။ အဘယ်ကြောင့် keys များကို list လုပ်ပေးရန်လိုသနည်း။ Redis တွင်ရှိသော command တိုင်း execution time တွင် မည်သည် keys များလိုအပ်သည်ကို သိရှိရန်လိုပါသည်။ ထိုမှသာ Redis Cluster ကဲ့သို့သော tools များတွင် Redis server များအတွက် request များကို ခွဲဝေပေးနိုင်မည်ဖြစ်သည်။ အပေါ်မှ ဥပမာ တွင် key များကို `eval` တွင် pass ပြုလုပ်စရာမလိုပဲ dynamic အနေဖြင့် ဆောင်ရွက်သွားသည်ကို တွေ့ရမည်ဖြစ်သည်။ `hget` သည် Leto ၏ ယောင်္ကျားလေး သူငယ်ချင်းအားလုံးကို ရယူပေးမည်ဖြစ်သည်။ အဘယ်ကြောင့်ဆိုသော် key များကိုကြို၍ list ပြုလုပ်ခြင်းသည် တင်းကျပ်သော စည်းမျဉ်းတစ်ခုဖြစ်သည်။ အပေါ်မှ code သညါ single-instance အနေဖြင့်သာမက replication တွင် ကောင်းကောင်း run မည်ဖြစ်သော်လည်း Redis Cluster တွင်အလုပ်လုပ်မည်မဟုတ်။
 
 ## Script Management
 
-Even though scripts executed via `eval` are cached by Redis, sending the body every time you want to execute something isn't ideal. Instead, you can register the script with Redis and execute it's key. To do this you use the `script load` command, which returns the SHA1 digest of the script:
+`eval` မှ run သော script များသည် Redis မှ cache ပြုလုပ်သေးသော်ညလး် လိုချင်သည့်အခါတိုင်း body ကို sent ရချင်သည် အလုပ်မတွင်လှချေ။ ထိုကြောင့် Redis တွင် ထို script ကိုကြေညာပြီး key များကိုသာ execute ပြုလုပ်နိုင်သည်။ ထိုသို့ပြုလုပ်ရန် `script load` command ကိုအသုံးပြုနိုင်ပြီး ၎င်းမှာ script ၏ SHA1 digest ကို return ပြန်ပေးသည်။
 
     redis = Redis.new
     script_key = redis.script(:load, "THE_SCRIPT")
 
-Once we've loaded the script, we can use `evalsha` to execute it:
+script ကို load ပြီးသည်နှင့် `evalsha` ကိုအသုံးပြု၍ execute ပြုလုပ်နိုင်သည်။
 
     redis.evalsha(script_key, ['friends:leto'], ['m'])
 
-`script kill`, `script flush` and `script exists` are the other commands that you can use to manage Lua scripts. They are used to kill a running script, removing all scripts from the internal cache and seeing if a script already exists within the cache.
+`script kill`၊ `script flush` နှင့် `script exists` တို့သည် Lua script များကို manage ပြုလုပ်နိုင်သော command များဖြစ်ပြီး script များ run ရာ ၊ internal cache ထဲမှာ script များ remove လုပ်ရာတွင်၊ cache အတွင်းနှင့် script ရှိမရှိ ဆန်းစစ်ရာတွင် အသုံးပြုသည်။
 
-## Libraries
+## Library များ
 
-Redis' Lua implementation ships with a handful of useful libraries. While `table.lib`, `string.lib` and `math.lib` are quite useful, for me, `cjson.lib` is worth singling out. First, if you find yourself having to pass multiple arguments to a script, it might be cleaner to pass it as JSON:
+Redis ၏ Lua implementationတွင် အသုံးဝင်လှသည့် library များပါ ပါဝင်သည်။ `table.lib`, `string.lib` နှင့် `math.lib` တို့မှာ အလွန်အသုံးဝင်သော်လည်း ကျွန်တော်အကြိုက်ဆုံးမှာ `cjson.lib` ဖြစ်သည်။ သင့်အနေဖြင့် multiple argument များအနေဖြင့်script ကို pass ပြုလုပ်ရပါက JSON အနေဖြင့်ဆို ပို၍ clean ဖြစ်မည်ဖြစ်သည်။
 
     redis.evalsha ".....", [KEY1], [JSON.fast_generate({gender: 'm', ghola: true})]
 
-Which you could then deserialize within the Lua script as:
+ထိုနောက် Lua Script အတွင်းအောက်ပါအတိုင်း deserialize ပြုလုပ်နိုင်သည်။
 
     local arguments = cjson.decode(ARGV[1])
 
-Of course, the JSON library can also be used to parse values stored in Redis itself. Our above example could potentially be rewritten as such:
+JSON library သည် Redis အတွင်းရှိ value များကို parse လုပ်ရာတွင်လည်း အသုံးဝင်သည်။ အပေါ်မှဥပမာကို အောက်ပါအတိုင်း ပြန်ပြင်ရေး၍ရသည်။
 
       local friend_names = redis.call('smembers', KEYS[1])
       local friends = {}
@@ -744,21 +744,22 @@ Of course, the JSON library can also be used to parse values stored in Redis its
       end
       return friends
 
-Instead of getting the gender from specific hash field, we could get it from the stored friend data itself. (This is a much slower solution, and I personally prefer the original, but it does show what's possible).
+gender ကို hash field မှ ယူမည့်အစား friend data မှယူ၍လည်းရသည်။ (၎င်းသည်ပို၍ နှေးပြီး မူလပုံစံကို ပို၍သဘောကျသော်လည်း ဖြစ်နိုင်သည်ကိုပြခြင်းဖြစ်သည်)
 
 ## Atomic
 
-Since Redis is single-threaded, you don't have to worry about your Lua script being interrupted by another Redis command. One of the most obvious benefits of this is that keys with a TTL won't expire half-way through execution. If a key is present at the start of the script, it'll be present at any point thereafter - unless you delete it.
+Redis သည် thread တစ်ခုတည်းဖြစ်သဖြင့် Lua script တစ်ခုကို နောက် Redis command တစ်ခုမှ ကြားဖြတ်မည်ကို စိုးရိမ်ရန်မလိုပေ။ ၎င်း၏ အထင်ရှားဆုံးအားသာချက်တစ်ခုမှ key များ၏ TTL သည် execution ပြုလုပ်နေချိန်တွင် expire ဖြစ်မည်မဟုတ်ပါ။ အကယ့်၍ key တစ်ခုသည် script ၏အစတွင်ရှိပါက မဖျက်သေးသရွေ့ရှိနေမည်ဖြစ်သည်။
 
 ## Administration
 
-The next chapter will talk about Redis administration and configuration in more detail. For now, simply know that the `lua-time-limit` defines how long a Lua script is allowed to execute before being terminated. The default is generous 5 seconds. Consider lowering it.
+နောက်အခန်းတွင် Redis administration နှင့် configuration အကြောင်းအသေးစိတ်၍ပြောပါမည်။ ယခုတွင်တော့ `lua-time-limit` သည် Lua script terminate မပြုလုပ်ခင် execution ကြာချိန်ကို limit လုပ်ခြင်းဖြစ်သည်။ default မှာ ၅ စက္ကန့်ဖြစ်ပြီး ထိုထက်ပို၍လျှော့နိုင်သည်။
 
-## In This Chapter
+## ယခုအခန်းတွင်
 
-This chapter introduced Redis' Lua scripting capabilities. Like anything, this feature can be abused. However, used prudently in order to implement your own custom and focused commands, it won't only simplify your code, but will likely improve performance. Lua scripting is like almost every other Redis feature/command: you make limited, if any, use of it at first only to find yourself using it more and more every day.
 
-# Chapter 6 - Administration
+ယခုအခန်းတွင် Redis ၏ Lua scripting လုပ်နိုင်စွမ်းကို မီတ်ဆက်ပေးခဲ့ပြီဖြစ်သည်။ ၎င်း feature အသုံးမတက်ပါက ဘေးဖြစ်နိုင်သော်လည်း မိမိတို့၏ custom command နှင့် အထူးပြု command များဖန်တီးနိုင်ပြီး code များကိုရှင်းလင်းရုံသာမက performance လည်ပိုမိုကောင်းပါသည်။ Lua scripting သည် အခြား redis command များကဲ့သို့ပင် အစောပိုင်းတွင် အခက်အခဲရှိမည်ဖြစ်ပြီး နောက်ပိုင်းတဖြည်းဖြည်းရင်းနှီးလာပါလိမ့်မည်။
+
+# အခန်း (၆) - Administration
 
 Our last chapter is dedicated to some of the administrative aspects of running Redis. In no way is this a comprehensive guide on Redis administration. At best we'll answer some of the more basic questions new users to Redis are most likely to have.
 
