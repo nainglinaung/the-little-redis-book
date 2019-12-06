@@ -761,66 +761,73 @@ Redis သည် thread တစ်ခုတည်းဖြစ်သဖြင့်
 
 # အခန်း (၆) - Administration
 
-Our last chapter is dedicated to some of the administrative aspects of running Redis. In no way is this a comprehensive guide on Redis administration. At best we'll answer some of the more basic questions new users to Redis are most likely to have.
+
+အခုနောက်ဆုံး အခန်းသည် Redis ကို run ရာတွင် administration လုပ်သည့် အပိုင်းကို အဓိကထားပြီး ပြောသွားမည်ဖြစ်သည်။ သို့သော် ၎င်းသည် Redis adminstration အတွက် ပြီးပြည့်စုံသွားမည် ဟု ဆိုလိုသည်မဟုတ်ပဲ Redis ကိုစတင် အသုံးပြုသူအတွက် အခြေခံမေးခွန်းများကို ဖြေနိုင်မည်ဖြစ်သည်။ 
 
 ## Configuration
 
-When you first launched the Redis server, it warned you that the `redis.conf` file could not be found. This file can be used to configure various aspects of Redis. A well-documented `redis.conf` file is available for each release of Redis. The sample file contains the default configuration options, so it's useful to both understand what the settings do and what their defaults are. You can find it at <http://download.redis.io/redis-stable/redis.conf>.
+ပထမဆုံး Redis Server ကို launch လုပ်လိုက်ချိန်တွင် `redis.conf` ဟုသော file ကိုမတွေ့ဟု warn လုပ်လိမ့်မည်ဖြစ်သည်။ ၎င်း file သည် Redis ၏ အရာတော်တော်များများကို config ပြုလုပ်ရာတွင် အသုံးပြုသည်။ အသေအချာ document ပြုလုပ်ထားသော `redis.conf` သည် Redis version တိုင်းတွင်ပါရှိပြီး default config option များ ပါဝင်သဖြင့် မည်သည့် setting များက ဘာလုပ်သည်နှင့် default value များကိုလေ့လာနိုင်သည်။ ၎င်းကို   <http://download.redis.io/redis-stable/redis.conf> တွင်တွေ့နိုင်သည်။ 
 
-Since the file is well-documented, we won't be going over the settings.
+ထို file သည် well-document ဖြစ်သဖြင့် setting ကိုထပ်၍မပြောတော့ပေ။ 
 
-In addition to configuring Redis via the `redis.conf` file, the `config set` command can be used to set individual values. In fact, we already used it when setting the `slowlog-log-slower-than` setting to 0.
+`redis.conf` အပြင် Redis တွင် `config set` ဟု value တစ်ခုချင်းစီကို set လုပ်နိုင်သည့် command လည်းရှိသေးသည်။ `slowlog-log-slower-than` ကို 0 အဖြစ်သတ်မှတ်စဉ်က အသုံးပြုခဲ့ပြီးဖြစ်သည်။ 
 
-There's also the `config get` command which displays the value of a setting. This command supports pattern matching. So if we want to display everything related to logging, we can do:
+ထိုအပြင် setting value ကိုဖော်ပြသည့် `config get` လည်းရှိပါသေးသည်။ ထို command သည် pattern matching ကို support လုပ်သည်။ အကယ်၍ logging နှင့်ပတ်သတ်သည့်အရာအားလုံးကိုသိလိုပါက အောက်ပါအတိုင်း လုပ်နိုင်သည်။
 
 	config get *log*
 
 ## Authentication
 
-Redis can be configured to require a password. This is done via the `requirepass` setting (set through either the `redis.conf` file or the `config set` command). When `requirepass` is set to a value (which is the password to use), clients will need to issue an `auth password` command.
+Redis ကို password ဖြင့် config လုပ်နိုင်သည်။ ၎င်းသည် `redis.conf` မှဖြစ်စေ၊ `config set` ဖြစ်စေ `requirepass` ကိုအသုံးပြုခြင်းဖြင့် set နိုင်သည်။ `reqiurepass` သည် value ကို set လိုက်ပါက client များသည် `auth password` ကိုအသုံးပြုရန်လိုသည်။
 
-Once a client is authenticated, they can issue any command against any database. This includes the `flushall` command which erases every key from every database. Through the configuration, you can rename commands to achieve some security through obfuscation:
+Client မှ authenticate ဖြစ်သည်နှင့် database အတွင်းရှိ command တိုင်းကို run နိုင်သည်။ ထိုကြောင့် database အားလုံးမှ key အားလုံးကို ဖျက်ပစ်သော `flushall` ကဲ့သို့သော key များလည် ပါဝင်သည်။ configuration ကိုအသုံးပြုပြီး ပိုမိုရှုပ်ထွေးသော နာမည်ပေးခြင်းဖြင့် ရှောင်ရှားနိုင်သည်။
 
 	rename-command CONFIG 5ec4db169f9d4dddacbfb0c26ea7e5ef
 	rename-command FLUSHALL 1041285018a942a4922cbf76623b741e
 
-Or you can disable a command by setting the new name to an empty string.
+သို့မဟုတ် နာမည်အသစ်ကို empty string ပေးခြင်းဖြင့်လည်း disable ပြုလုပ်နိုင်သည်။
 
 ## Size Limitations
 
-As you start using Redis, you might wonder "how many keys can I have?" You might also wonder how many fields can a hash have (especially when you use it to organize your data), or how many elements can lists and sets have? Per instance, the practical limits for all of these is in the hundreds of millions.
+Redis ကိုစတင်အသုံးပြုနေစဉ်ကတည်းက တွေးမိနိုင်ပါသည်။ "ငါ key ဘယ်နှစ်ခုလောက်ထည့်၍ရမလဲ"၊ "သင့် data ကို organize ပြုလုပ်ရာတွင် အထူးသဖြင့် hash တစ်ခုတွင် field ဘယ်နှစ်ခုပါ၍ရနိုင်နည်း"၊ "list တစ်ခု ဝါ set တစ်ခုတွင် element မည်မျှအထိ ထည့်၍ရသနည်း"။ တကယ်လက်တွေ့တွင် ၎င်း limit များသည် သန်းရာနဲ့ချီအထိ ဖြစ်သည်။
 
 
 ## Replication
 
-Redis supports replication, which means that as you write to one Redis instance (the master), one or more other instances (the slaves) are kept up-to-date by the master. To configure a slave you use either the `slaveof` configuration setting or the `slaveof` command (instances running without this configuration are or can be masters).
+Redis တွင် replication ကို support ပြုလုပ်သဖြင့် Redis instance တစ်ခု (master) ကို write ခြင်းဖြင့် တစ်ခုထက်ပိုသော အခြားသော instance (slave) များ ကို အလိုအလျောက် up-to-date ဖြစ်အောင် config လုပ်၍ရသည်။ 
+slave အနေဖြင့် config လုပ်ရန် `slaveof` ကို setting file တွင်၎င်း ၊ command အနေဖြင့်၎င်း အသုံးပြုနိုင်သည်။ (ထို config မပါပဲသုံးပါက master ဖြစ်နေမည်ဖြစ်သည်။
 
-Replication helps protect your data by copying to different servers. Replication can also be used to improve performance since reads can be sent to slaves. They might respond with slightly out of date data, but for most apps that's a worthwhile tradeoff.
+Replication သည် မတူညီသော server များတွင် သင့် data များကို ပွားထားခြင်းဖြင့် protect လုပ်ပေးမည်ဖြစ်ပြီး Replication သည် slave များမှ read နိုင်သောကြောင့် performance လည်းပိုကောင်းစေနိုင်သည်။ ၎င်းသည် အနည်းငယ် နောက်ကျနေသော data များကို respond လုပ်မည်ဖြစ်သော်လည်း app အတော်များများအတွက် ထိုက်တန်သော tradeoff ဖြစ်သည်။
 
-Unfortunately, Redis replication doesn't yet provide automated failover. If the master dies, a slave needs to be manually promoted. Traditional high-availability tools that use heartbeat monitoring and scripts to automate the switch are currently a necessary headache if you want to achieve some sort of high availability with Redis.
+သို့သော် Redis replication သည် automate failover မပါရှိသဖြင့် master သေသွားပါက slave သည် manually အနေဖြင့် promote ပြုလုပ်ရန်လိုသည်။ ထုံတမ်းစဉ်လာ heartbeat monitoring tools များနှင့် script များကို အသုံးပြု၍ စောင့်ကြည့်ရခြင်းသည် လက်ရှိတော့ ခေါင်းကိုက်စရာဖြစ်နေပါသေးသည်။
 
 ## Backups
 
-Backing up Redis is simply a matter of copying Redis' snapshot to whatever location you want (S3, FTP, ...). By default Redis saves its snapshot to a file named `dump.rdb`. At any point in time, you can simply `scp`, `ftp` or `cp` (or anything else) this file.
+Redis တွင် backup ပြုလုပ်ခြင်းသည် မည်သည့်နေရာကမဆို (S3၊ FTP...) Redis snapshot ကို copy လုပ်ခြင်းသာဖြစ်သည်။ Default အနေဖြင့် Redis သည် snapshot ကို `dump.rdb` ဟု အမည်ဖြင့် save လေ့ရှိပြီး မည်သည့်အခြေအနေမဆို သင့်အနေဖြင့် `scp`၊ `ftp` သို့မဟုတ် `cp` နှင့် အခြားသော command များအသုံးပြု၍ ကူးယူနိုင်သည်။
 
-It isn't uncommon to disable both snapshotting and the append-only file (aof) on the master and let a slave take care of this. This helps reduce the load on the master and lets you set more aggressive saving parameters on the slave without hurting overall system responsiveness.
+master အတွက် snapshot ပြုလုပ်ခြင်းနှင့် append ပြုလုပ်ခြင်း (aof) ကို disable လုပ်လေ့လုပ်ထရှိပြီး slave တွင်သာ on ထားတက်သည်။ ထိုသို့ဖြင့် master တွင် load ကို လျှော့ချနိုင်ပြီး ပို၍ parameter များကို slave တွင် save နိုင်ပြီး system ၏ responsiveness ကိုထိခိုက်ခြင်းမရှိလှပါ။
 
-## Scaling and Redis Cluster
+## Scaling နှင့် Redis Cluster
 
-Replication is the first tool a growing site can leverage. Some commands are more expensive than others (`sort` for example) and offloading their execution to a slave can keep the overall system responsive to incoming queries.
+Replication သည် site တစ်ခု grow ဖြစ်လာသောအခါ ပထမဆုံးအသုံးပြုနိုင်သည့် tool ဖြစ်သည်။ အချို့သော command များသည် အခြားသော command များထက်ပို၍ expensive ဖြစ်ပြီး (ဥပမာ `sort` ကဲ့သို့) ၎င်း execution များကို slave များကို ခွဲပေးလိုက်ခြင်းဖြင့် ထပ်၍လာသော query များအတွက် ပို၍ responsive ဖြစ်သော system ဖြစ်ပါလိမ့်မည်။ 
 
-Beyond this, truly scaling Redis comes down to distributing your keys across multiple Redis instances (which could be running on the same box, remember, Redis is single-threaded). For the time being, this is something you'll need to take care of (although a number of Redis drivers do provide consistent-hashing algorithms). Thinking about your data in terms of horizontal distribution isn't something we can cover in this book. It's also something you probably won't have to worry about for a while, but it's something you'll need to be aware of regardless of what solution you use.
+ထိုမှကျော်လွန်၍ Redis ကို တကယ် scale ပြုလုပ်ခြင်းသည် Redis instance များစွာတွင် သို့ keys များစွာကို distribute ပြုလုပ်ထားခြင်းဖြစ်သည်။ (Redis သည် single thread ဖြစ်သဖြင့် Box တစ်ခုထဲတွင် run သည်လည်းဖြစ်နိုင်သည်) ထိုအချိန်ကာလအတွင်း သင်အနေဖြင့် ကိုင်တွယ်စရာတစ်ခုရှိပါသည် (Redis driver အတော်များများ support ပြုလုပ်ထားသော်လည်း)  Horizontal distribution သည် ဒီစာအုပ်ထဲတွင်မပါ။
+သင့်အနေဖြင့် အချိန်ကာလတော်တော်များများအထိ ပူစရာမလိုသော်လည်း ဘယ် solution ကိုသုံးသည်မဆို အချိန်ကြာလှသည့်အမျှ စဉ်းစားရမည့်အချက်ဖြစ်သည်။
 
-The good news is that work is under way on Redis Cluster. Not only will this offer horizontal scaling, including rebalancing, but it'll also provide automated failover for high availability.
+သတင်းကောင်းမှာ ထိုအလုပ်သည် Redis Cluster တွင်ပါရှိပြီး ၎င်းသည် horizontal scaling အတွက် support လုပ်ရုံသာမက reblancing အတွက်ပါပါဝင်ပြီး high availabity ဖြစ်ရန် အလိုအလျောက် ပြန်စသည် စနစ်ပါရှိမည်ဖြစ်သည်။
 
-High availability and scaling is something that can be achieved today, as long as you are willing to put the time and effort into it. Moving forward, Redis Cluster should make things much easier.
 
-## In This Chapter
+သင့်အနေဖြင့် အချိန်နှင့် အားစိုက်မှု ပါရှိပါက High availability နှင့် scaling သည် ရရှိနိုင်သည့် ရလဒ်တစ်ခုဖြစ်ပြီး ထိုထက်ပို၍ Redis Cluster များသုံးခြင်းသည် ပို၍လွယ်ကူသည်။
 
-Given the number of projects and sites using Redis already, there can be no doubt that Redis is production-ready, and has been for a while. However, some of the tooling, especially around security and availability is still young. Redis Cluster, which we'll hopefully see soon, should help address some of the current management challenges.
 
-# Conclusion
+## ယခုအခန်းတွင်
 
-In a lot of ways, Redis represents a simplification in the way we deal with data. It peels away much of the complexity and abstraction available in other systems. In many cases this makes Redis the wrong choice. In others it can feel like Redis was custom-built for your data.
+Redis ဖြင့် projects များ၊ sites များ အသုံးပြုပြီးကာလ Redis သည် production ready ဖြစ်သည်ကို အငြင်းပွားရန်မရှိပေ။ သို့သော် အချို့သော tool များ အထူးသဖြင့် security နှင့် availabilty အတွက် tools များသည် သိပ်မကြာလှသေးပေ။ Redis Cluster သည် လက်ရှိ management challenge များကို ဖြေရှင်း ပေးမည်ဟု မျှော်လင့်ရသည်။ 
 
-Ultimately it comes back to something I said at the very start: Redis is easy to learn. There are many new technologies and it can be hard to figure out what's worth investing time into learning. When you consider the real benefits Redis has to offer with its simplicity, I sincerely believe that it's one of the best investments, in terms of learning, that you and your team can make.
+
+# နိဂုံး
+
+
+Redis သည် data များကို ကိုင်တွယ်ရတာတွင် ရိုးရှင်းမှု၏ သင်္ကေတ တစ်ခု ဖြစ်သည်။ အခြား system များတွင်ပါရှိတက်သော complexity နှင့် abstraction များကို ခွဲခြားပေးနိုင်သည်။ ထိုကြောင့် Redis ကို မှားယွင်းစွာ အသုံးပြုမိလေ့ရှိသည်။ အချို့ ကိစ္စများတွင်မူ Redis သည် သင့် data နှင့် အံကိုက်ဖြစ်လိမ့်မည်။
+
+အနှစ်ချုပ်ရပါလျင် Redis သည် သင်ကြားရလွယ်ကူသည်။ တခြား နည်းပညာအသစ်များစွာရှိပြီး ၎င်းတို့ကို လေ့လာရန် ထိုက်တန်ခြင်းရှိမရှိကို ဆန်းစစ်ရသည်မှာ လွယ်သည်မဟုတ်။ Redis ၏ တကယ့် အကျိုးကျေးဇူးနှင့် ၎င်းရိုးရှင်းမှုတို့ကို နှိုင်းစာပါလျင် သင့်နှင့် သင်၏ team အတွက် ထိုက်တန်သော ရင်းနှီးမြုပ်နှံမှုတစ်ခုဟု မြင်မိပါသည်။ 
